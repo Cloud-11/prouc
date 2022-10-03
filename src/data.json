@@ -1,0 +1,20 @@
+{
+  "container": {
+    "width": 550,
+    "height": 550
+  },
+  "blocks": [
+    {
+      "type": "text",
+      "top": 100,
+      "left": 100,
+      "zIndex": 1
+    },
+    {
+      "type": "button",
+      "top": 200,
+      "left": 100,
+      "zIndex": 1
+    }
+  ]
+}
