@@ -1,6 +1,6 @@
 import { computed, defineComponent, inject } from "vue";
 import { Block } from "..";
-import { CompontentsConfig } from "../utils/editorCompontentsConfig";
+import { ComponentsConfig } from "../utils/editorComponentsConfig";
 
 export default defineComponent({
   props: {
@@ -13,8 +13,8 @@ export default defineComponent({
       left: block.left + "px",
       zIndex: block.zIndex,
     }));
-    const compontentsConfig = inject("compontentsConfig") as CompontentsConfig;
-    const { label, preview, render } = compontentsConfig.compontentMap[block.type];
+    const componentsConfig = inject("componentsConfig") as ComponentsConfig;
+    const { label, preview, render } = componentsConfig.componentMap[block.type];
 
     return () => (
       <div class="editor-block" style={blockStyles.value}>

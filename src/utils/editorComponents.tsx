@@ -2,8 +2,8 @@ export default [
   {
     label: "文本",
     type: "text",
-    preview: () => "预览文本",
-    render: () => "渲染文本",
+    preview: () => <div>预览文本</div>,
+    render: () => <div>渲染文本</div>,
   },
   {
     label: "按钮",

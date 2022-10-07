@@ -11,4 +11,5 @@ export interface Block {
   top: number;
   left: number;
   zIndex: number;
+  focus?: boolean;
 }

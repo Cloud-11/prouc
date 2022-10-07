@@ -1,15 +1,17 @@
-import { computed, ComputedRef, defineComponent, inject, ref } from "vue";
+import { computed, ComputedRef, defineComponent, inject, Ref, ref } from "vue";
 import "./editor.scss";
 import EditorBlock from "./block";
 import { DATA_JSON } from "../index";
-import { CompontentsConfig } from "../utils/editorCompontentsConfig";
+import { ComponentsConfig } from "../utils/editorComponentsConfig";
 import PreviewBlock from "../components/previewBlock";
-import { useDragstartHandle, useDrop } from "../hooks/useDragEvent";
+import { useDraggerHandle } from "../hooks/useDragEvent";
+import { useBlocsFocus } from "../hooks/useBlockFocus";
 
 export default defineComponent({
   props: {
     modelValue: { type: Object },
   },
+  emits: ["update:modelValue"],
   setup(props, { emit }) {
     //全局data数据
     const data = computed({
@@ -20,20 +22,29 @@ export default defineComponent({
         emit("update:modelValue", newValue);
       },
     }) as ComputedRef<DATA_JSON>;
-    const containerStyles = computed(() => ({
-      width: data.value.container.width + "px",
-      height: data.value.container.height + "px",
-    }));
+    //画布布局
+    const containerStyles = computed(() => {
+      const { width, height } = data.value.container;
+      return {
+        width: `${width.toString().indexOf("%") ? width : width + "px"}`,
+        height: `${height.toString().indexOf("%") ? height : height + "px"}`,
+      };
+    });
     //组件数据
-    const compontentsConfig = inject("compontentsConfig") as CompontentsConfig;
+    const componentsConfig = inject("componentsConfig") as ComponentsConfig;
+    //预览组件拖拽
     const contentRef = ref(null);
-    const drop = useDrop(data);
-    const dragstartHandle = useDragstartHandle(drop, contentRef);
+    const dragHandle = useDraggerHandle(data, contentRef);
+    //渲染组件选择、拖拽、框选
+    const maskRef = ref(null);
+    const { blockMousedown, contentMousedown, is_show_mask, maskStyle } =
+      useBlocsFocus(data);
+
     return () => (
       <div class="editor">
         <div class="editor-left">
-          {compontentsConfig.compontentList.map(component => (
-            <PreviewBlock component={component} handle={dragstartHandle}></PreviewBlock>
+          {componentsConfig.componentList.map(component => (
+            <PreviewBlock component={component} handle={dragHandle}></PreviewBlock>
           ))}
         </div>
         <div class="editor-top">上</div>
@@ -43,9 +54,18 @@ export default defineComponent({
             <div
               class="editor-container-canvas-content"
               style={containerStyles.value}
-              ref={contentRef}>
+              ref={contentRef}
+              onMousedown={e => contentMousedown(e, contentRef, maskRef)}>
+              <div
+                class="mask"
+                ref={maskRef}
+                v-show={is_show_mask}
+                style={maskStyle.value}></div>
               {data.value.blocks.map(block => (
-                <EditorBlock block={block}></EditorBlock>
+                <EditorBlock
+                  block={block}
+                  onMousedown={(e: MouseEvent) => blockMousedown(e, block)}
+                  class={block.focus ? "editor-block-focus" : ""}></EditorBlock>
               ))}
             </div>
           </div>

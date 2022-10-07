@@ -63,20 +63,36 @@
     &-canvas {
       overflow: scroll;
       height: 100%;
-      margin: auto 10px;
+      margin: 10px;
       &-content {
-        margin: 20px auto;
+        // margin: 20px auto;
         background-color: rgba(199, 199, 199, 0.5);
         position: relative;
+        .mask {
+          position: absolute;
+          background-color: rgba(97, 197, 255, 0.685);
+        }
       }
     }
   }
   &-block {
     position: absolute;
     border: 1px rgba(255, 255, 255, 0) solid;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc rgba(199, 199, 199, 0.5);
+    }
+    &-focus::after {
+      border: 1px dashed red;
+    }
   }
   &-block:hover {
-    border: 1px rgb(49, 115, 236) solid;
+    // border: 1px rgb(49, 115, 236) solid;
     cursor: pointer;
   }
 }

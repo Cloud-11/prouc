@@ -2,9 +2,9 @@
 import { provide, ref } from 'vue'
 import data from "./data.json"
 import Editor from "./packages/editor";
-import compontentsConfig from './utils/editorCompontentsConfig';
+import componentsConfig from './utils/editorComponentsConfig';
 
-provide("compontentsConfig", compontentsConfig)
+provide("componentsConfig", componentsConfig)
 
 const state = ref(data)
 </script>
