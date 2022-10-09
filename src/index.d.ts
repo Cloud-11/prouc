@@ -10,6 +10,8 @@ export interface Block {
   type: string;
   top: number;
   left: number;
+  width: number;
+  height: number;
   zIndex: number;
   focus?: boolean;
 }

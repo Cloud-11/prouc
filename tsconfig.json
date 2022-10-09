@@ -4,6 +4,10 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "moduleResolution": "Node",
+    "paths": {
+      // 用于设置模块名到基于baseUrl的路径映射
+      "@/*": ["./src/*"]
+    },
     "strict": true,
     "jsx": "preserve",
     "sourceMap": true,

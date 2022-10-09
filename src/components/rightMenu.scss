@@ -1,0 +1,36 @@
+.rightMenu-container {
+  position: absolute;
+}
+.rightMenu-menu {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  padding: 5px 0;
+  margin: 0;
+  background-color: #fff;
+  border: none;
+  border-radius: 5px;
+  box-shadow: none;
+  list-style: none;
+  outline: none;
+  &-item {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    list-style: none;
+    line-height: 22px;
+    padding: 5px 16px;
+    // margin: 0;
+    color: #606266;
+    cursor: pointer;
+    outline: none;
+    i {
+      margin-right: 5px;
+    }
+  }
+  &-item:hover {
+    background-color: #819fdb56;
+    color: #578fff;
+  }
+}
