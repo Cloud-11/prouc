@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@element-plus/icons-vue': ^2.0.10
+  '@icon-park/vue-next': ^1.4.2
   '@types/node': ^18.8.3
   '@vitejs/plugin-vue': ^3.1.2
   '@vitejs/plugin-vue-jsx': ^2.0.1
@@ -16,7 +16,7 @@ specifiers:
   vue-tsc: ^0.40.13
 
 dependencies:
-  '@element-plus/icons-vue': 2.0.10_vue@3.2.40
+  '@icon-park/vue-next': 1.4.2_vue@3.2.40
   element-plus: 2.2.17_vue@3.2.40
   pinia: 2.0.23_bfjwoga25wxjazzogo7o372nwq
   vue: 3.2.40
@@ -374,6 +374,15 @@ packages:
     resolution: {integrity: sha512-5X9WSvZ8/fjy3gDu8yx9HAA4KG1lazUN2P4/VnaXLxTO9Dz53HI1oYoh1OlhqFNlHgGDiwFX5WhFCc2ljbW3yA==}
     dependencies:
       '@floating-ui/core': 1.0.1
+    dev: false
+
+  /@icon-park/vue-next/1.4.2_vue@3.2.40:
+    resolution: {integrity: sha512-+QklF255wkfBOabY+xw6FAI0Bwln/RhdwCunNy/9sKdKuChtaU67QZqU67KGAvZUTeeBgsL+yaHHxqfQeGZXEQ==}
+    engines: {node: '>= 8.0.0', npm: '>= 5.0.0'}
+    peerDependencies:
+      vue: 3.x
+    dependencies:
+      vue: 3.2.40
     dev: false
 
   /@jridgewell/gen-mapping/0.1.1:

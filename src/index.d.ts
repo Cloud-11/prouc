@@ -1,6 +1,6 @@
 export interface DATA_JSON {
   container: {
-    width: number;
+    width: string;
     height: number;
   };
   blocks: Block[];

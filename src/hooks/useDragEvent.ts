@@ -1,8 +1,11 @@
 import { Ref } from "vue";
-import { Component } from "../utils/editorComponentsConfig";
-import { DATA_JSON } from "./../index.d";
+import { Component } from "@/utils/editorComponentsConfig";
+import { DATA_JSON } from "..";
 
-export const useDraggerHandle = (data: Ref<DATA_JSON>, compontentRef: Ref) => {
+export const useDraggerHandle = (
+  JsonData: Ref<DATA_JSON>,
+  contentRef: Ref<HTMLElement>
+) => {
   let currentComponent: Component | null;
   const dragenter = (e: DragEvent) => {
     //元素检测到拖动进入 设置禁用标识
@@ -29,24 +32,24 @@ export const useDraggerHandle = (data: Ref<DATA_JSON>, compontentRef: Ref) => {
       height: 0,
     };
 
-    data.value.blocks.push(block);
+    JsonData.value.blocks.push(block);
     currentComponent = null;
   };
 
   return {
-    dragStart: (e: DragEvent, component: Component) => {
+    dragStart: (component: Component) => {
       currentComponent = component;
-      compontentRef.value.addEventListener("dragenter", dragenter);
-      compontentRef.value.addEventListener("dragover", dragover);
-      compontentRef.value.addEventListener("dragleave", dragleave);
-      compontentRef.value.addEventListener("drop", drop);
+      contentRef.value.addEventListener("dragenter", dragenter);
+      contentRef.value.addEventListener("dragover", dragover);
+      contentRef.value.addEventListener("dragleave", dragleave);
+      contentRef.value.addEventListener("drop", drop);
     },
     dragEnd: () => {
       currentComponent = null;
-      compontentRef.value.removeEventListener("dragenter", dragenter);
-      compontentRef.value.removeEventListener("dragover", dragover);
-      compontentRef.value.removeEventListener("dragleave", dragleave);
-      compontentRef.value.removeEventListener("drop", drop);
+      contentRef.value.removeEventListener("dragenter", dragenter);
+      contentRef.value.removeEventListener("dragover", dragover);
+      contentRef.value.removeEventListener("dragleave", dragleave);
+      contentRef.value.removeEventListener("drop", drop);
     },
   };
 };

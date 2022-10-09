@@ -1,13 +1,15 @@
-import { createApp } from "vue";
 import "./style.css";
 import "element-plus/dist/index.css";
-import ElementPlus from "element-plus";
-import { createPinia } from "pinia";
+import "@icon-park/vue-next/styles/index.css";
 import App from "./App.vue";
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import ElementPlus from "element-plus";
 
-const app = createApp(App);
 const pinia = createPinia();
 
-app.use(ElementPlus);
+const app = createApp(App);
 app.use(pinia);
+app.use(ElementPlus);
+
 app.mount("#app");

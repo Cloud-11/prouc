@@ -1,5 +1,11 @@
+$bezier-ease-in: cubic-bezier(0.4, 0, 1, 1);
+$bezier-ease-out: cubic-bezier(0, 0, 0.2, 1);
+$bezier: cubic-bezier(0.4, 0, 0.2, 1);
 .rightMenu-container {
   position: absolute;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s $bezier, box-shadow 0.3s $bezier;
 }
 .rightMenu-menu {
   position: relative;
@@ -14,6 +20,11 @@
   box-shadow: none;
   list-style: none;
   outline: none;
+  &-divider {
+    height: 1px;
+    margin: 4px;
+    background-color: #f0f0f6;
+  }
   &-item {
     display: flex;
     align-items: center;
@@ -21,16 +32,15 @@
     list-style: none;
     line-height: 22px;
     padding: 5px 16px;
-    // margin: 0;
-    color: #606266;
+    font-size: 14px;
+    color: rgb(51, 54, 57);
     cursor: pointer;
     outline: none;
     i {
-      margin-right: 5px;
+      margin-right: 9px;
     }
   }
   &-item:hover {
-    background-color: #819fdb56;
-    color: #578fff;
+    background-color: #d1e0f0;
   }
 }

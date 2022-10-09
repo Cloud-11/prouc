@@ -1,7 +1,6 @@
-import { computed, h, reactive, ref, Ref, render } from "vue";
-import { DATA_JSON, Block } from "..";
-import rightMenu from "../components/rightMenu";
-import menus from "../utils/menusConfig";
+import { computed, Ref } from "vue";
+import { Block, DATA_JSON } from "@/index.d";
+
 interface LineX {
   showLeft: number;
   activeLeft: number;
@@ -20,27 +19,37 @@ interface BlockStartPos {
   lines?: Lines;
 }
 
-export const useBlocsFocus = (data: Ref<DATA_JSON>) => {
+export const useBlocsEvent = (
+  JsonData: Ref<DATA_JSON>,
+  markLine: Ref<{ x: number | null; y: number | null }>
+) => {
   //block选中
   const focusBlocks = computed(() => {
     let focus: Block[] = [];
     let unFocused: Block[] = [];
-    data.value.blocks.forEach(block => (block.focus ? focus : unFocused).push(block));
+    JsonData.value.blocks.forEach(block => (block.focus ? focus : unFocused).push(block));
     return { focus, unFocused };
   });
-
+  //
   let blockStartPos: BlockStartPos = {
     x: 0,
     y: 0,
   };
 
-  const blockMousedown = (e: MouseEvent, block: Block, contentRef: Ref) => {
+  const blockMousedown = (
+    e: MouseEvent,
+    block: Block,
+    hiddenRightMenu: Function,
+    contentRef: Ref<HTMLElement>
+  ) => {
     e.preventDefault();
     e.stopPropagation();
+    //隐藏右键菜单
+    hiddenRightMenu();
     //非shift清空选择
     if (!e.shiftKey) {
       if (!block.focus) {
-        clearFocusBlocks(data, markLine);
+        clearFocusBlocks(JsonData, markLine);
       }
     }
     //block被选中
@@ -67,7 +76,6 @@ export const useBlocsFocus = (data: Ref<DATA_JSON>) => {
     };
   };
   //移动所有选中的block 添加吸附辅助线
-  let markLine: { x: number | null; y: number | null } = reactive({ x: null, y: null });
   const blockMousemove = (e: MouseEvent) => {
     let { clientX: moveX, clientY: moveY } = e;
     const { focus } = focusBlocks.value;
@@ -77,8 +85,8 @@ export const useBlocsFocus = (data: Ref<DATA_JSON>) => {
     const newtop = moveY - y + focusTop;
 
     //吸附
-    markLine.x = null;
-    markLine.y = null;
+    markLine.value.x = null;
+    markLine.value.y = null;
 
     //show top line
     let minTopIndex = -1;
@@ -90,7 +98,7 @@ export const useBlocsFocus = (data: Ref<DATA_JSON>) => {
     if (minTopIndex >= 0) {
       const { showTop, activeTop } = (lines as Lines).y[minTopIndex];
       moveY = y - focusTop + activeTop;
-      markLine.y = showTop;
+      markLine.value.y = showTop;
     }
 
     //show left line
@@ -103,7 +111,7 @@ export const useBlocsFocus = (data: Ref<DATA_JSON>) => {
     if (minLeftIndex >= 0) {
       const { showLeft, activeLeft } = (lines as Lines).x[minLeftIndex];
       moveX = x - focusLeft + activeLeft;
-      markLine.x = showLeft;
+      markLine.value.x = showLeft;
     }
     const durx = moveX - x;
     const dury = moveY - y;
@@ -118,26 +126,23 @@ export const useBlocsFocus = (data: Ref<DATA_JSON>) => {
     blockStartPos.y = moveY;
   };
   const blockMouseup = (e: MouseEvent) => {
-    // markLine.x = null;
-    // markLine.y = null;
     document.removeEventListener("mousemove", blockMousemove);
     document.removeEventListener("mouseup", blockMouseup);
   };
 
   return {
     blockMousedown,
-    markLine,
   };
 };
 
 //清空focus
 export const clearFocusBlocks = (
-  data: Ref<DATA_JSON>,
-  markLine: { x: number | null; y: number | null }
+  JsonData: Ref<DATA_JSON>,
+  markLine: Ref<{ x: number | null; y: number | null }>
 ) => {
-  markLine.x = null;
-  markLine.y = null;
-  data.value.blocks.forEach(block => (block.focus = false));
+  markLine.value.x = null;
+  markLine.value.y = null;
+  JsonData.value.blocks.forEach(block => (block.focus = false));
 };
 
 //
@@ -193,13 +198,4 @@ const initLines = (
     });
   });
   return lines;
-};
-
-export const useBlockMenu = (e: MouseEvent) => {
-  e.preventDefault();
-  const vnode = h(rightMenu, {
-    items: menus,
-    style: { top: e.pageY + "px", left: e.pageX + "px" },
-  });
-  render(vnode, document.body);
 };

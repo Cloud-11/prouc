@@ -1,12 +1,6 @@
 <script setup lang="ts">
-import { provide, ref } from 'vue'
-import data from "./data.json"
-import Editor from "./packages/editor";
-import componentsConfig from './utils/editorComponentsConfig';
-
-provide("componentsConfig", componentsConfig)
-
-const state = ref(data)
+import Editor from "@/packages/editor";
+import RightMenu from "@/components/rightMenu";
 </script>
 
 <template>
@@ -15,7 +9,8 @@ const state = ref(data)
         <div class="header-item center">工作画布</div>
         <div class="header-item right"></div>
     </header>
-    <Editor v-model=state></Editor>
+    <Editor></Editor>
+    <RightMenu></RightMenu>
 </template>
 <style lang="scss">
 .header {

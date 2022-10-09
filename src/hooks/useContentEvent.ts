@@ -2,16 +2,18 @@ import { ref, Ref } from "vue";
 import { Block, DATA_JSON } from "..";
 import { clearFocusBlocks } from "./useBlockEvent";
 
-export const useContentEvent = (
-  data: Ref<DATA_JSON>,
-  markLine: { x: number | null; y: number | null }
-) => {
+export const useContentEvent = (JsonData: Ref<DATA_JSON>) => {
   //渲染组件框选
   let is_show_mask = ref(false);
 
   let maskStyle = ref({ width: "0", height: "0", top: "0", left: "0" });
-  const contentMousedown = (e: MouseEvent, contentRef: Ref) => {
-    clearFocusBlocks(data, markLine);
+  const contentMousedown = (
+    e: MouseEvent,
+    contentRef: Ref,
+    markLine: Ref<{ x: number | null; y: number | null }>
+  ) => {
+    clearFocusBlocks(JsonData, markLine);
+
     //记录初始位置\
     let startPos = {
       x: e.clientX,
@@ -34,7 +36,7 @@ export const useContentEvent = (
     };
     const contentMouseup = () => {
       is_show_mask.value = false;
-      data.value.blocks.forEach(block => {
+      JsonData.value.blocks.forEach(block => {
         if (collide(block, maskStyle)) {
           block.focus = true;
         }

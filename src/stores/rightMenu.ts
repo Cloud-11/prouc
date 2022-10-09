@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 
 export const useRightMenuStore = defineStore("rightMenu", () => {
-  const showMenu = ref(true);
+  let showMenu = ref(false);
   function hiddenMenu() {
     showMenu.value = false;
   }
@@ -10,5 +10,11 @@ export const useRightMenuStore = defineStore("rightMenu", () => {
     showMenu.value = true;
   }
 
-  return { showMenu, hiddenMenu, showsMenu };
+  const menuPos = reactive({ top: 0, left: 0 });
+  function setMenuPos(value: { top: number; left: number }) {
+    menuPos.top = value.top;
+    menuPos.left = value.left;
+  }
+
+  return { showMenu, hiddenMenu, showsMenu, menuPos, setMenuPos };
 });
