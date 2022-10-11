@@ -86,13 +86,13 @@
       bottom: 0;
       background-color: #ccc rgba(199, 199, 199, 0.5);
     }
+    &:hover {
+      // border: 1px dashed red;
+      cursor: pointer;
+    }
     &-focus::after {
       border: 1px dashed red;
     }
-  }
-  &-block:hover {
-    // border: 1px rgb(49, 115, 236) solid;
-    cursor: pointer;
   }
 }
 .line-x {

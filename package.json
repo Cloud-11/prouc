@@ -11,10 +11,12 @@
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
     "element-plus": "^2.2.17",
+    "lodash": "^4.17.21",
     "pinia": "^2.0.23",
     "vue": "^3.2.40"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.186",
     "@types/node": "^18.8.3",
     "@vitejs/plugin-vue": "^3.1.2",
     "@vitejs/plugin-vue-jsx": "^2.0.1",

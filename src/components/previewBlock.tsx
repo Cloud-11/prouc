@@ -1,9 +1,8 @@
 import { useDraggerHandle } from "@/hooks/useDragEvent";
 import { defineComponent, Ref } from "vue";
-import { Component } from "../utils/editorComponentsConfig";
+import { Component } from "../configs/editorComponentsConfig";
 import { storeToRefs } from "pinia";
-import { useJsonDataStore } from "@/stores/jsonData";
-import { useDomRefStore } from "@/stores/domRef";
+import { useJsonDataStore, useDomRefStore } from "@/stores/";
 export default defineComponent({
   props: {
     component: { type: Object },
@@ -11,11 +10,10 @@ export default defineComponent({
   setup(props) {
     const component = props.component as Component;
     //全局data数据
-    const JsonDataStore = useJsonDataStore();
-    const { JsonData } = storeToRefs(JsonDataStore);
+    const { addBlock } = useJsonDataStore();
     const DomRefStore = useDomRefStore();
     const contentRef = storeToRefs(DomRefStore).contentRef as Ref<HTMLElement>;
-    const { dragStart, dragEnd } = useDraggerHandle(JsonData, contentRef);
+    const { dragStart, dragEnd } = useDraggerHandle(addBlock, contentRef);
     return () => (
       <div
         class="editor-left-preview"

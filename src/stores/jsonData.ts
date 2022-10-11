@@ -1,19 +1,56 @@
 import { defineStore } from "pinia";
-import { Ref, ref } from "vue";
-import { Block, DATA_JSON } from "..";
+import { computed, reactive, Ref, toRefs } from "vue";
+import { Block, DATA_JSON, MaskArea } from "../index.d";
 import data from "../data.json";
+import { collide } from "@/utils";
 export const useJsonDataStore = defineStore("JsonData", () => {
-  const JsonData: Ref<DATA_JSON> = ref(data);
+  const JsonData: DATA_JSON = reactive(data);
+  const { container, blocks } = toRefs(JsonData);
 
   function addBlock(block: Block) {
-    JsonData.value.blocks.push(block);
+    blocks.value.push(block);
   }
-  function removeBlock(block: Block, index: number) {
+  function removeBlock(block: Block | null, index: number) {
     if (!index) {
-      index = JsonData.value.blocks.indexOf(block);
+      index = blocks.value.indexOf(block as Block);
     }
-    JsonData.value.blocks.slice(index, 1);
+    blocks.value.slice(index, 1);
   }
-
-  return { JsonData, addBlock, removeBlock };
+  function modifyBlock(index: number, block: Block) {
+    blocks.value[index] = block;
+  }
+  //block选中
+  const focusAndBlocks = computed(() => {
+    const focusBlocks: Block[] = [];
+    const unFocusBlocks: Block[] = [];
+    blocks.value.forEach(block =>
+      (block.focus ? focusBlocks : unFocusBlocks).push(block)
+    );
+    return {
+      focusBlocks,
+      unFocusBlocks,
+      lastFocusBlock: focusBlocks[focusBlocks.length - 1],
+    };
+  });
+  function clearFocusBlock() {
+    blocks.value.forEach(block => (block.focus = false));
+  }
+  //多选
+  function multipleBlock(maskArea: Ref<MaskArea>) {
+    blocks.value.forEach(block => {
+      if (collide(block, maskArea)) {
+        block.focus = true;
+      }
+    });
+  }
+  return {
+    container,
+    blocks,
+    focusAndBlocks,
+    addBlock,
+    removeBlock,
+    modifyBlock,
+    clearFocusBlock,
+    multipleBlock,
+  };
 });

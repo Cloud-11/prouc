@@ -9,10 +9,12 @@ import {
   useJsonDataStore,
   useDomRefStore,
   useGlobalDataStore,
+  useRightMenuOptsStore,
 } from "@/stores";
 export default defineComponent({
   props: {
     block: { type: Object },
+    blockIndex: { type: Number },
   },
   setup(props) {
     const block = props.block as Block;
@@ -26,20 +28,23 @@ export default defineComponent({
 
     //显示右键菜单
     const { showsMenu, setMenuPos, hiddenMenu } = useRightMenuStore();
+    const { setMenus } = useRightMenuOptsStore();
     const { showRightMenu, hiddenRightMenu } = useRightMenu(
       showsMenu,
       setMenuPos,
-      hiddenMenu
+      hiddenMenu,
+      setMenus
     );
 
     const JsonDataStore = useJsonDataStore();
-    const { JsonData } = storeToRefs(JsonDataStore);
+    const { modifyBlock, clearFocusBlock } = JsonDataStore;
+    const { blocks, focusAndBlocks } = storeToRefs(JsonDataStore);
     const DomRefStore = useDomRefStore();
     const contentRef = storeToRefs(DomRefStore).contentRef as Ref<HTMLElement>;
     const globalDataStore = useGlobalDataStore();
     const { markLine } = storeToRefs(globalDataStore);
     //渲染组件选择、拖拽
-    const { blockMousedown } = useBlocsEvent(JsonData, markLine);
+    const { blockMousedown } = useBlocsEvent(focusAndBlocks, markLine);
 
     //渲染完成更新大小位置
     const blockRef: Ref<HTMLElement | null> = ref(null);
@@ -56,9 +61,17 @@ export default defineComponent({
       <div
         class="editor-block"
         onMousedown={(e: MouseEvent) =>
-          blockMousedown(e, block, hiddenRightMenu, contentRef)
+          blockMousedown(
+            e,
+            props.blockIndex as number,
+            clearFocusBlock,
+            blocks,
+            modifyBlock,
+            hiddenRightMenu,
+            contentRef
+          )
         }
-        onContextmenu={(e: MouseEvent) => showRightMenu(e)}
+        onContextmenu={(e: MouseEvent) => showRightMenu(e, "blockMenus")}
         ref={blockRef}
         style={blockStyles.value}>
         {render()}

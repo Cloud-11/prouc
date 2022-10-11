@@ -4,12 +4,19 @@ export interface RightMenu {
   handler: (e: MouseEvent) => void;
 }
 export interface RightMenuOpts {
-  copyOpts: RightMenu[];
-  moveOpts: RightMenu[];
-  otherOpts: RightMenu[];
+  groupOpts?: RightMenu[];
+  copyOpts?: RightMenu[];
+  moveOpts?: RightMenu[];
+  otherOpts?: RightMenu[];
 }
 const operation = () => {};
 const commands = {
+  group: (e: MouseEvent) => {
+    console.log(e);
+  },
+  ungroup: (e: MouseEvent) => {
+    console.log(e);
+  },
   copy: (e: MouseEvent) => {
     console.log(e);
   },
@@ -35,7 +42,21 @@ const commands = {
     console.log(e);
   },
 };
-const copyOpts = [
+
+const groupOpts: RightMenu[] = [
+  {
+    label: "组合",
+    icon: () => <group theme="outline" size="24" fill="#333" />,
+    handler: commands["group"],
+  },
+  {
+    label: "取消组合",
+    icon: () => <ungroup theme="outline" size="24" fill="#333" />,
+    handler: commands["ungroup"],
+  },
+];
+
+const copyOpts: RightMenu[] = [
   {
     label: "复制",
     icon: () => <copy theme="outline" size="24" fill="#333" />,
@@ -48,7 +69,7 @@ const copyOpts = [
   },
 ];
 
-const moveOpts = [
+const moveOpts: RightMenu[] = [
   {
     label: "置顶",
     icon: () => <to-top-one theme="outline" size="24" fill="#333" />,
@@ -70,7 +91,7 @@ const moveOpts = [
     handler: commands["down"],
   },
 ];
-const otherOpts = [
+const otherOpts: RightMenu[] = [
   {
     label: "撤销",
     icon: () => <back theme="outline" size="24" fill="#333" />,
@@ -83,6 +104,7 @@ const otherOpts = [
   },
 ];
 export default {
+  groupOpts,
   copyOpts,
   moveOpts,
   otherOpts,

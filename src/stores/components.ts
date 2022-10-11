@@ -1,4 +1,4 @@
-import components, { ComponentsConfig } from "@/utils/editorComponentsConfig";
+import components, { ComponentsConfig } from "@/configs/editorComponentsConfig";
 import { defineStore } from "pinia";
 
 export const useComponentsConfigStore = defineStore("componentsConfigStore", () => {

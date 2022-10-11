@@ -1,11 +1,7 @@
 import { Ref } from "vue";
-import { Component } from "@/utils/editorComponentsConfig";
-import { DATA_JSON } from "..";
+import { Component } from "@/configs/editorComponentsConfig";
 
-export const useDraggerHandle = (
-  JsonData: Ref<DATA_JSON>,
-  contentRef: Ref<HTMLElement>
-) => {
+export const useDraggerHandle = (addBlock: Function, contentRef: Ref<HTMLElement>) => {
   let currentComponent: Component | null;
   const dragenter = (e: DragEvent) => {
     //元素检测到拖动进入 设置禁用标识
@@ -31,8 +27,8 @@ export const useDraggerHandle = (
       width: 0,
       height: 0,
     };
-
-    JsonData.value.blocks.push(block);
+    addBlock(block);
+    // JsonData.value.blocks.push(block);
     currentComponent = null;
   };
 

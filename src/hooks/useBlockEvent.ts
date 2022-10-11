@@ -20,16 +20,13 @@ interface BlockStartPos {
 }
 
 export const useBlocsEvent = (
-  JsonData: Ref<DATA_JSON>,
+  focusAndBlocks: Ref<{
+    focusBlocks: Block[];
+    unFocusBlocks: Block[];
+    lastFocusBlock: Block;
+  }>,
   markLine: Ref<{ x: number | null; y: number | null }>
 ) => {
-  //block选中
-  const focusBlocks = computed(() => {
-    let focus: Block[] = [];
-    let unFocused: Block[] = [];
-    JsonData.value.blocks.forEach(block => (block.focus ? focus : unFocused).push(block));
-    return { focus, unFocused };
-  });
   //
   let blockStartPos: BlockStartPos = {
     x: 0,
@@ -38,7 +35,10 @@ export const useBlocsEvent = (
 
   const blockMousedown = (
     e: MouseEvent,
-    block: Block,
+    blockIndex: number,
+    clearFocusBlock: Function,
+    blocks: Ref<Block[]>,
+    modifyBlock: Function,
     hiddenRightMenu: Function,
     contentRef: Ref<HTMLElement>
   ) => {
@@ -47,25 +47,27 @@ export const useBlocsEvent = (
     //隐藏右键菜单
     hiddenRightMenu();
     //非shift清空选择
+    const block = blocks.value[blockIndex];
     if (!e.shiftKey) {
       if (!block.focus) {
-        clearFocusBlocks(JsonData, markLine);
+        clearFocusBlocks(clearFocusBlock, markLine);
       }
     }
     //block被选中
     block.focus = true;
+    modifyBlock(blockIndex, block);
 
     //block选中添加拖拽事件
     document.addEventListener("mousemove", blockMousemove);
     document.addEventListener("mouseup", blockMouseup);
     //最后一个选中block的位置
-    const { unFocused } = focusBlocks.value;
+    // console.log(lastFocusBlock);
 
     blockStartPos = {
       x: e.clientX,
       y: e.clientY,
-      lines: initLines(focusBlocks, [
-        ...unFocused,
+      lines: initLines(focusAndBlocks.value.lastFocusBlock, [
+        ...focusAndBlocks.value.unFocusBlocks,
         {
           top: 0,
           left: 0,
@@ -78,8 +80,8 @@ export const useBlocsEvent = (
   //移动所有选中的block 添加吸附辅助线
   const blockMousemove = (e: MouseEvent) => {
     let { clientX: moveX, clientY: moveY } = e;
-    const { focus } = focusBlocks.value;
-    const { top: focusTop, left: focusLeft } = focus[focus.length - 1];
+
+    const { top: focusTop, left: focusLeft } = focusAndBlocks.value.lastFocusBlock;
     const { x, y, lines } = blockStartPos;
     const newleft = moveX - x + focusLeft;
     const newtop = moveY - y + focusTop;
@@ -117,7 +119,7 @@ export const useBlocsEvent = (
     const dury = moveY - y;
 
     //移动所有选中的block
-    focusBlocks.value.focus.forEach(block => {
+    focusAndBlocks.value.focusBlocks.forEach(block => {
       block.top += dury;
       block.left += durx;
     });
@@ -125,7 +127,7 @@ export const useBlocsEvent = (
     blockStartPos.x = moveX;
     blockStartPos.y = moveY;
   };
-  const blockMouseup = (e: MouseEvent) => {
+  const blockMouseup = () => {
     document.removeEventListener("mousemove", blockMousemove);
     document.removeEventListener("mouseup", blockMouseup);
   };
@@ -137,21 +139,20 @@ export const useBlocsEvent = (
 
 //清空focus
 export const clearFocusBlocks = (
-  JsonData: Ref<DATA_JSON>,
+  clearFocusBlock: Function,
   markLine: Ref<{ x: number | null; y: number | null }>
 ) => {
   markLine.value.x = null;
   markLine.value.y = null;
-  JsonData.value.blocks.forEach(block => (block.focus = false));
+  clearFocusBlock();
 };
 
 //
 const initLines = (
-  focusBlocks: Ref,
+  lastFocusBlock: Block,
   needLinesArr: { top: number; left: number; width: number; height: number }[]
 ) => {
-  const { focus, unFocused } = focusBlocks.value;
-  const { width: focusWidth, height: focusHeight } = focus[focus.length - 1];
+  const { width: focusWidth, height: focusHeight } = lastFocusBlock;
   const lines: Lines = { x: [], y: [] };
   needLinesArr.forEach(block => {
     const { top, left, width, height } = block;
