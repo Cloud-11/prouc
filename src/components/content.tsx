@@ -1,4 +1,4 @@
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, onUpdated } from "vue";
 import EditorBlock from "../packages/block";
 import { useContentEvent } from "../hooks/useContentEvent";
 import { storeToRefs } from "pinia";
@@ -10,17 +10,14 @@ import {
   useRightMenuOptsStore,
 } from "@/stores";
 import { useRightMenu } from "@/hooks/useRightMenu";
-import { Block } from "..";
+import { Group } from "./../index.d";
 
 export default defineComponent({
   setup() {
-    // const { container,block } = useJsonDataStore();
-    const { container, blocks } = storeToRefs(useJsonDataStore());
-    const { clearFocusBlock, multipleBlock } = useJsonDataStore();
-    const DomRefStore = useDomRefStore();
-    const { contentRef } = storeToRefs(DomRefStore);
-    const globalDataStore = useGlobalDataStore();
-    const { markLine } = storeToRefs(globalDataStore);
+    const { container, blocks, focusAndBlocks } = storeToRefs(useJsonDataStore());
+    const { clearFocusBlock, multipleBlock, modifyBlock } = useJsonDataStore();
+    const { contentRef } = storeToRefs(useDomRefStore());
+    const { markLine } = storeToRefs(useGlobalDataStore());
 
     //显示右键菜单
     const { showsMenu, setMenuPos, hiddenMenu } = useRightMenuStore();
@@ -64,12 +61,26 @@ export default defineComponent({
           <div class="line-y" style={{ top: markLine.value.y + "px" }}></div>
         )}
         <div class="mask" v-show={is_show_mask} style={maskStyle.value}></div>
-        {blocks.value.map((block, index) => (
-          <EditorBlock
-            block={block}
-            blockIndex={index}
-            class={block.focus ? "editor-block-focus" : ""}></EditorBlock>
-        ))}
+        {Array.from(blocks.value.values()).map(block => {
+          return block.type == "group" ? (
+            <EditorBlock
+              key={block.id}
+              block={block}
+              class={block.focus ? "editor-block-focus" : ""}>
+              {(block as Group).blocks.map(block => (
+                <EditorBlock
+                  // v-key={block.id}
+                  block={block}
+                  class={block.focus ? "editor-block-focus" : ""}></EditorBlock>
+              ))}
+            </EditorBlock>
+          ) : (
+            <EditorBlock
+              key={block.id}
+              block={block}
+              class={block.focus ? "editor-block-focus" : ""}></EditorBlock>
+          );
+        })}
       </div>
     );
   },

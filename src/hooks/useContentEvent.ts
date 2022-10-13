@@ -1,4 +1,4 @@
-import { ref, Ref } from "vue";
+import { ref, Ref, toRaw } from "vue";
 import { Block, DATA_JSON, MaskArea } from "..";
 import { clearFocusBlocks } from "./useBlockEvent";
 
@@ -41,7 +41,8 @@ export const useContentEvent = (clearFocusBlock: Function, multipleBlock: Functi
     };
     const contentMouseup = () => {
       is_show_mask.value = false;
-      multipleBlock(maskArea);
+      const maskAreaRaw = toRaw(maskArea);
+      multipleBlock(maskAreaRaw);
       // JsonData.blocks.forEach(block => {
       //   if (collide(block, maskStyle)) {
       //     block.focus = true;

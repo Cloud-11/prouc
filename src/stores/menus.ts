@@ -1,7 +1,8 @@
 import rightMenus, { RightMenuOpts } from "@/configs/menusConfig";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { Ref, ref } from "vue";
 import _ from "lodash";
+import { useJsonDataStore } from "./jsonData";
 export type menusName = "blockMenus" | "blocksMenus" | "groupMenus" | "canvasMenus";
 export const useRightMenuOptsStore = defineStore("rightMenuOptsStore", () => {
   const rightMenusData = rightMenus;
@@ -18,9 +19,9 @@ export const useRightMenuOptsStore = defineStore("rightMenuOptsStore", () => {
     otherOpts,
   };
   //多选block菜单
-  const blocksMenus: RightMenuOpts = _.merge({ groupOpts: groupOpts[0] }, blockMenus);
+  const blocksMenus: RightMenuOpts = _.merge({ groupOpts: [groupOpts[0]] }, blockMenus);
   //组合block菜单
-  const groupMenus: RightMenuOpts = _.merge({ groupOpts: groupOpts[1] }, blockMenus);
+  const groupMenus: RightMenuOpts = _.merge({ groupOpts: [groupOpts[1]] }, blockMenus);
 
   const map = {
     blockMenus,
@@ -31,8 +32,15 @@ export const useRightMenuOptsStore = defineStore("rightMenuOptsStore", () => {
 
   const menus: Ref<RightMenuOpts> = ref(blockMenus);
   function setMenus(name: menusName) {
-    console.log(name);
-
+    const { focusAndBlocks } = storeToRefs(useJsonDataStore());
+    const { focusBlocks } = focusAndBlocks.value;
+    if (name === "blockMenus") {
+      focusBlocks.length > 1 && focusBlocks.every(block => block.type !== "group")
+        ? (name = "blocksMenus")
+        : "";
+    } else if (name === "groupMenus") {
+      focusBlocks.length != 1 ? (name = "blockMenus") : "";
+    }
     return (menus.value = map[name]);
   }
 

@@ -35,9 +35,8 @@ export const useBlocsEvent = (
 
   const blockMousedown = (
     e: MouseEvent,
-    blockIndex: number,
     clearFocusBlock: Function,
-    blocks: Ref<Block[]>,
+    block: Block,
     modifyBlock: Function,
     hiddenRightMenu: Function,
     contentRef: Ref<HTMLElement>
@@ -47,21 +46,17 @@ export const useBlocsEvent = (
     //隐藏右键菜单
     hiddenRightMenu();
     //非shift清空选择
-    const block = blocks.value[blockIndex];
     if (!e.shiftKey) {
       if (!block.focus) {
         clearFocusBlocks(clearFocusBlock, markLine);
       }
     }
     //block被选中
-    block.focus = true;
-    modifyBlock(blockIndex, block);
+    modifyBlock(block.id, "focus", true);
 
     //block选中添加拖拽事件
     document.addEventListener("mousemove", blockMousemove);
     document.addEventListener("mouseup", blockMouseup);
-    //最后一个选中block的位置
-    // console.log(lastFocusBlock);
 
     blockStartPos = {
       x: e.clientX,

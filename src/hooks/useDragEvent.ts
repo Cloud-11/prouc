@@ -21,6 +21,8 @@ export const useDraggerHandle = (addBlock: Function, contentRef: Ref<HTMLElement
     const { type } = currentComponent as Component;
     const block = {
       type,
+      group: false,
+      focus: false,
       zIndex: 1,
       top: e.offsetY,
       left: e.offsetX,
@@ -28,7 +30,6 @@ export const useDraggerHandle = (addBlock: Function, contentRef: Ref<HTMLElement
       height: 0,
     };
     addBlock(block);
-    // JsonData.value.blocks.push(block);
     currentComponent = null;
   };
 
