@@ -1,4 +1,4 @@
-import { computed, defineComponent, onUpdated } from "vue";
+import { computed, defineComponent } from "vue";
 import EditorBlock from "../packages/block";
 import { useContentEvent } from "../hooks/useContentEvent";
 import { storeToRefs } from "pinia";
@@ -14,8 +14,8 @@ import { Group } from "./../index.d";
 
 export default defineComponent({
   setup() {
-    const { container, blocks, focusAndBlocks } = storeToRefs(useJsonDataStore());
-    const { clearFocusBlock, multipleBlock, modifyBlock } = useJsonDataStore();
+    const { container, blocks } = storeToRefs(useJsonDataStore());
+    const { clearFocusBlock, multipleBlock } = useJsonDataStore();
     const { contentRef } = storeToRefs(useDomRefStore());
     const { markLine } = storeToRefs(useGlobalDataStore());
 
@@ -69,7 +69,7 @@ export default defineComponent({
               class={block.focus ? "editor-block-focus" : ""}>
               {(block as Group).blocks.map(block => (
                 <EditorBlock
-                  // v-key={block.id}
+                  //TODO v-key={block.id}  不能加id 组合会报错 ?
                   block={block}
                   class={block.focus ? "editor-block-focus" : ""}></EditorBlock>
               ))}

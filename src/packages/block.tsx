@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, onUpdated, Ref, ref, Slot } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, Slot } from "vue";
 import { Block } from "..";
 import { useRightMenu } from "@/hooks/useRightMenu";
 import { useBlocsEvent } from "@/hooks/useBlockEvent";
@@ -18,17 +18,19 @@ const EditorBlock = defineComponent({
   setup(props, { slots }) {
     const block = props.block as Block;
     const JsonDataStore = useJsonDataStore();
-    const { modifyBlock, clearFocusBlock } = JsonDataStore;
+    const { modifyBlock, clearFocusBlock, recordOpts } = JsonDataStore;
     const { focusAndBlocks } = storeToRefs(JsonDataStore);
     const DomRefStore = useDomRefStore();
     const contentRef = storeToRefs(DomRefStore).contentRef as Ref<HTMLElement>;
     const globalDataStore = useGlobalDataStore();
     const { markLine } = storeToRefs(globalDataStore);
-    let blockStyles = computed(() => ({
-      top: block.top + "px",
-      left: block.left + "px",
-      zIndex: block.zIndex,
-    }));
+    let blockStyles = computed(() => {
+      return {
+        top: block.top + "px",
+        left: block.left + "px",
+        zIndex: block.zIndex,
+      };
+    });
     const { componentsConfig } = useComponentsConfigStore();
     let innerRender = () => {};
     if (block.type == "group") {
@@ -56,12 +58,21 @@ const EditorBlock = defineComponent({
     );
 
     //渲染组件选择、拖拽
-    const { blockMousedown } = useBlocsEvent(focusAndBlocks, markLine);
+    const { blockMousedown } = useBlocsEvent(
+      focusAndBlocks,
+      clearFocusBlock,
+      modifyBlock,
+      hiddenRightMenu,
+      recordOpts,
+      markLine,
+      contentRef
+    );
 
     //渲染完成更新大小位置
     const blockRef: Ref<HTMLElement | null> = ref(null);
     onMounted(() => {
-      if (block.type !== "group" && !block.group) {
+      //(props.block as Block).width==0 代表拖拽进来的需要调整位置
+      if (block.type !== "group" && !block.group && (props.block as Block).width == 0) {
         const { offsetWidth, offsetHeight } = blockRef.value as HTMLElement;
         (props.block as Block).left -= offsetWidth / 2;
         (props.block as Block).top -= offsetHeight / 2;
@@ -75,17 +86,7 @@ const EditorBlock = defineComponent({
       <div
         class="editor-block"
         onMousedown={
-          block.group
-            ? undefined
-            : (e: MouseEvent) =>
-                blockMousedown(
-                  e,
-                  clearFocusBlock,
-                  block,
-                  modifyBlock,
-                  hiddenRightMenu,
-                  contentRef
-                )
+          block.group ? undefined : (e: MouseEvent) => blockMousedown(e, block)
         }
         onContextmenu={
           block.group

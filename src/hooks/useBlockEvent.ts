@@ -1,5 +1,6 @@
-import { computed, Ref } from "vue";
-import { Block, DATA_JSON } from "@/index.d";
+import { Ref } from "vue";
+import { Block } from "@/index.d";
+import { RecordOpts } from "@/stores/jsonData";
 
 interface LineX {
   showLeft: number;
@@ -25,22 +26,20 @@ export const useBlocsEvent = (
     unFocusBlocks: Block[];
     lastFocusBlock: Block;
   }>,
-  markLine: Ref<{ x: number | null; y: number | null }>
+  clearFocusBlock: Function,
+  modifyBlock: Function,
+  hiddenRightMenu: Function,
+  recordOpts: Function,
+  markLine: Ref<{ x: number | null; y: number | null }>,
+  contentRef: Ref<HTMLElement>
 ) => {
   //
   let blockStartPos: BlockStartPos = {
     x: 0,
     y: 0,
   };
-
-  const blockMousedown = (
-    e: MouseEvent,
-    clearFocusBlock: Function,
-    block: Block,
-    modifyBlock: Function,
-    hiddenRightMenu: Function,
-    contentRef: Ref<HTMLElement>
-  ) => {
+  let isMove = false;
+  const blockMousedown = (e: MouseEvent, block: Block) => {
     e.preventDefault();
     e.stopPropagation();
     //隐藏右键菜单
@@ -71,6 +70,8 @@ export const useBlocsEvent = (
         },
       ]),
     };
+    //将要移动先记录 未移动再删除
+    recordOpts(RecordOpts.MOVE);
   };
   //移动所有选中的block 添加吸附辅助线
   const blockMousemove = (e: MouseEvent) => {
@@ -112,17 +113,25 @@ export const useBlocsEvent = (
     }
     const durx = moveX - x;
     const dury = moveY - y;
+    if (durx != 0 || dury != 0) {
+      isMove = true;
+      //移动所有选中的block
+      focusAndBlocks.value.focusBlocks.forEach(block => {
+        block.top += dury;
+        block.left += durx;
+      });
+    }
 
-    //移动所有选中的block
-    focusAndBlocks.value.focusBlocks.forEach(block => {
-      block.top += dury;
-      block.left += durx;
-    });
     //记录鼠标新位置
     blockStartPos.x = moveX;
     blockStartPos.y = moveY;
   };
   const blockMouseup = () => {
+    if (!isMove) {
+      recordOpts(RecordOpts.MOVE, "unmove");
+    } else {
+      isMove = false;
+    }
     document.removeEventListener("mousemove", blockMousemove);
     document.removeEventListener("mouseup", blockMouseup);
   };

@@ -1,6 +1,32 @@
 <script setup lang="ts">
 import Editor from "@/packages/editor";
 import RightMenu from "@/components/rightMenu";
+import { useRightMenuHandler } from "./configs/menusConfig";
+import { storeToRefs } from "pinia";
+import { useDomRefStore, useGlobalDataStore, useJsonDataStore } from "./stores";
+import { onMounted, onUnmounted, provide, Ref } from "vue";
+import { useKeyDownEvent } from "@/hooks/useKeyDownEvent";
+import rightMenuOpts from "@/configs/menusConfig";
+
+const { focusAndBlocks } = storeToRefs(useJsonDataStore());
+const { addBlock, modifyBlock, removeBlock, clearFocusBlock, undoRecordOpts } = useJsonDataStore();
+const { contentRef } = storeToRefs(useDomRefStore());
+const { clipboard, copyMousePos } = storeToRefs(useGlobalDataStore());
+//初始化快捷键功能
+const commands = useRightMenuHandler(
+    focusAndBlocks,
+    removeBlock,
+    addBlock,
+    modifyBlock,
+    clearFocusBlock, undoRecordOpts,
+    contentRef as Ref<HTMLElement>,
+    clipboard,
+    copyMousePos
+);
+const { init, destory } = useKeyDownEvent(commands, rightMenuOpts);
+onMounted(() => init());
+onUnmounted(() => destory());
+provide("commands", commands)
 </script>
 
 <template>

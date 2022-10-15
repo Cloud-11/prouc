@@ -13,15 +13,9 @@ import {
   Group,
   Ungroup,
 } from "@icon-park/vue-next";
-import { computed, defineComponent, onUnmounted, Ref } from "vue";
-import {
-  useDomRefStore,
-  useJsonDataStore,
-  useRightMenuOptsStore,
-  useRightMenuStore,
-} from "@/stores";
-import { RightMenu, useRightMenuHandler } from "@/configs/menusConfig";
-import { useGlobalDataStore } from "@/stores/globalData";
+import { computed, defineComponent, inject, onUnmounted } from "vue";
+import { useRightMenuOptsStore, useRightMenuStore } from "@/stores";
+import { Commands, RightMenu } from "@/configs/menusConfig";
 
 export default defineComponent({
   components: {
@@ -40,44 +34,33 @@ export default defineComponent({
   },
   setup() {
     const { menus } = storeToRefs(useRightMenuOptsStore());
-    const { contentRef } = storeToRefs(useDomRefStore());
-    const { clipboard, copyMousePos } = storeToRefs(useGlobalDataStore());
     const rightMenuStore = useRightMenuStore();
     //解构会失去响应式 所以使用storeToRefs
     const { showMenu, menuPos } = storeToRefs(rightMenuStore);
     const { hiddenMenu } = rightMenuStore;
+
+    const commands = inject("commands") as Commands;
     //清除右键菜单
     document.body.addEventListener("click", () => {
       hiddenMenu();
     });
+
     onUnmounted(() => {
       document.body.removeEventListener("click", hiddenMenu);
     });
+
     const menuStyle = computed(() => {
       return {
         top: menuPos.value.top + "px",
         left: menuPos.value.left + "px",
       };
     });
-    const { focusAndBlocks } = storeToRefs(useJsonDataStore());
-    const { addBlock, modifyBlock, removeBlock } = useJsonDataStore();
 
     const optsItems = (opts: RightMenu[] | undefined) =>
       opts?.map(item => (
         <li
           class="rightMenu-menu-item"
-          onClick={(e: MouseEvent) =>
-            useRightMenuHandler(
-              item.name,
-              focusAndBlocks,
-              removeBlock,
-              addBlock,
-              modifyBlock,
-              contentRef as Ref<HTMLElement>,
-              clipboard,
-              copyMousePos
-            )(e)
-          }>
+          onClick={(e: MouseEvent) => commands[item.name](e)}>
           <el-icon>{item.icon()}</el-icon>
           {item.label}
         </li>

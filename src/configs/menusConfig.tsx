@@ -1,9 +1,11 @@
+import _, { xor } from "lodash";
 import { Ref, toRaw } from "vue";
 import { Block } from "..";
 import { Group } from "./../index.d";
 export interface RightMenu {
   label: string;
   name: CommandName;
+  keyboard?: string[];
   icon: () => void;
 }
 export interface RightMenuOpts {
@@ -12,7 +14,7 @@ export interface RightMenuOpts {
   moveOpts?: RightMenu[];
   otherOpts?: RightMenu[];
 }
-type CommandName =
+export type CommandName =
   | "group"
   | "ungroup"
   | "copy"
@@ -25,8 +27,11 @@ type CommandName =
   | "delete";
 const operation = () => {};
 
+export type Commands = {
+  [key in CommandName]: Function;
+};
+
 export const useRightMenuHandler = (
-  command: CommandName,
   focusAndBlocks: Ref<{
     focusBlocks: Block[];
     unFocusBlocks: Block[];
@@ -35,13 +40,12 @@ export const useRightMenuHandler = (
   removeBlock: Function,
   addBlock: Function,
   modifyBlock: Function,
+  clearFocusBlock: Function,
+  undoRecordOpts: Function,
   contentRef: Ref<HTMLElement>,
   clipboard: Ref<Block[]>,
-  copyMousePos: Ref<{ x: number; y: number }>
-): Function => {
-  const focusAndBlocksRaw = toRaw(focusAndBlocks.value);
-  const { focusBlocks } = focusAndBlocksRaw;
-
+  copyMousePos: Ref<{ x: number; y: number; copyNum: number }>
+): Commands => {
   const commands = {
     group: () => {
       let top = 0,
@@ -51,13 +55,13 @@ export const useRightMenuHandler = (
         blocks: Block[] = [],
         count = 0;
 
-      focusBlocks.forEach(b => {
-        const block = toRaw(b);
-        removeBlock(b.id);
+      focusAndBlocks.value.focusBlocks.forEach(b => {
+        const block = _.cloneDeep(b);
+        removeBlock(b.id, "group");
         top = count == 0 ? block.top : Math.min(top, block.top);
         left = count == 0 ? block.left : Math.min(left, block.left);
         count++;
-        blocks.push(b);
+        blocks.push(block);
       });
       blocks.forEach(block => {
         block.group = true;
@@ -68,80 +72,115 @@ export const useRightMenuHandler = (
         block.left = block.left - left;
       });
 
-      addBlock({
-        type: "group",
-        group: false,
-        top,
-        left,
-        width,
-        height,
-        focus: true,
-        blocks,
-        zIndex: 1,
-      });
+      addBlock(
+        {
+          type: "group",
+          group: false,
+          top,
+          left,
+          width,
+          height,
+          focus: true,
+          blocks,
+          zIndex: 1,
+        },
+        "group"
+      );
     },
     ungroup: () => {
-      const group = focusBlocks[0] as Group;
+      const group = focusAndBlocks.value.focusBlocks[0] as Group;
       group.blocks.forEach(b => {
-        const block = toRaw(b);
+        const block = _.cloneDeep(b);
         block.group = false;
-        block.top = group.top + block.top + block.height / 2;
-        block.left = group.left + block.left + block.width / 2;
-        addBlock(block);
+        block.top = group.top + block.top;
+        block.left = group.left + block.left;
+        addBlock(block, "ungroup");
       });
-      removeBlock(group.id);
+      removeBlock(group.id, "ungroup");
     },
     copy: (e: MouseEvent) => {
-      clipboard.value = [...focusBlocks];
-      copyMousePos.value = { x: e.clientX, y: e.clientY };
+      console.log("copy", focusAndBlocks);
+      const { offsetTop, offsetLeft } = contentRef.value;
+      const { focusBlocks } = toRaw(focusAndBlocks.value);
+      let { clientX: x, clientY: y } = e;
+      clipboard.value = [];
+      focusBlocks.forEach(block => {
+        const b = _.cloneDeep(block);
+        clipboard.value.push(b);
+        if (x == undefined) {
+          x = b.left + offsetLeft;
+          y = b.top + offsetTop;
+        }
+      });
+      copyMousePos.value = { x, y, copyNum: 0 };
     },
     paste: (e: MouseEvent) => {
-      const { clientX, clientY } = e;
+      console.log("paste");
       const { offsetTop, offsetLeft } = contentRef.value;
-      console.log(clipboard);
-      //当前鼠标位置 依据content重新定位
-      const mousePosX = clientX - offsetLeft;
-      const mousePosY = clientY - offsetTop;
-      //拷贝时鼠标位置 依据content重新定位
-      const copyMousePosY = copyMousePos.value.y - offsetTop;
-      const copyMousePosX = copyMousePos.value.x - offsetLeft;
-      clipboard.value.forEach(b => {
-        //拷贝时鼠标位置 和各组件相对差值
-        const drux = copyMousePosX - b.left - b.width * 0.5;
-        const druy = copyMousePosY - b.top - b.height * 0.5;
+      if (clipboard.value.length == 0) return;
+      const { clientX, clientY } = e;
+
+      let mousePosX = 0,
+        mousePosY = 0,
+        copyMousePosY = 0,
+        copyMousePosX = 0;
+
+      if (copyMousePos.value.x && clientX) {
+        //当前鼠标位置 依据content重新定位
+        mousePosX = clientX - offsetLeft;
+        mousePosY = clientY - offsetTop;
+        //拷贝时鼠标位置 依据content重新定位
+        copyMousePosY = copyMousePos.value.y - offsetTop;
+        copyMousePosX = copyMousePos.value.x - offsetLeft;
+      }
+      clearFocusBlock();
+      clipboard.value.forEach((b, index) => {
+        let top = 0,
+          left = 0;
+        if (copyMousePos.value.x && clientX) {
+          //拷贝时鼠标位置 和各组件相对差值
+          left = mousePosX - (copyMousePosX - b.left);
+          top = mousePosY - (copyMousePosY - b.top);
+        } else {
+          copyMousePos.value.copyNum++;
+          top = b.top + copyMousePos.value.copyNum * 20;
+          left = b.left + copyMousePos.value.copyNum * 20;
+        }
         //当前鼠标位置 加差值复原各组件相对位置
-        addBlock({
-          ...b,
-          top: mousePosY - druy,
-          left: mousePosX - drux,
-        });
+        addBlock(
+          {
+            ...b,
+            foucs: true,
+            top,
+            left,
+          },
+          index == clipboard.value.length - 1 ? "copyOver" : "copy"
+        );
       });
     },
     toTop: () => {
-      focusAndBlocksRaw.focusBlocks.forEach(b => {
-        const block = toRaw(b);
-        modifyBlock(block.id, "zIndex", 999);
+      focusAndBlocks.value.focusBlocks.forEach(b => {
+        modifyBlock(b.id, "zIndex", 999);
       });
     },
     toBottom: () => {
-      focusAndBlocksRaw.focusBlocks.forEach(b => {
-        const block = toRaw(b);
-        modifyBlock(block.id, "zIndex", 1);
+      focusAndBlocks.value.focusBlocks.forEach(b => {
+        modifyBlock(b.id, "zIndex", 1);
       });
     },
     up: () => {
-      focusAndBlocksRaw.focusBlocks.forEach(b => {
-        const block = toRaw(b);
-        modifyBlock(block.id, "zIndex", block.zIndex + 1);
+      focusAndBlocks.value.focusBlocks.forEach(b => {
+        modifyBlock(b.id, "zIndex", b.zIndex + 1);
       });
     },
     down: () => {
-      focusAndBlocksRaw.focusBlocks.forEach(b => {
-        const block = toRaw(b);
-        modifyBlock(block.id, "zIndex", block.zIndex - 1);
+      focusAndBlocks.value.focusBlocks.forEach(b => {
+        modifyBlock(b.id, "zIndex", b.zIndex - 1);
       });
     },
-    undo: () => {},
+    undo: () => {
+      undoRecordOpts();
+    },
     delete: () => {
       const { focusBlocks } = focusAndBlocks.value;
       focusBlocks.forEach(b => {
@@ -149,13 +188,14 @@ export const useRightMenuHandler = (
       });
     },
   };
-  return commands[command];
+  return commands;
 };
 
 const groupOpts: RightMenu[] = [
   {
     label: "组合",
     name: "group",
+
     icon: () => <group theme="outline" size="24" fill="#333" />,
   },
   {
@@ -169,11 +209,13 @@ const copyOpts: RightMenu[] = [
   {
     label: "复制",
     name: "copy",
+    keyboard: ["ctrl+c"],
     icon: () => <copy theme="outline" size="24" fill="#333" />,
   },
   {
     label: "粘贴",
     name: "paste",
+    keyboard: ["ctrl+v"],
     icon: () => <clipboard theme="outline" size="24" fill="#333" />,
   },
 ];
@@ -204,11 +246,13 @@ const otherOpts: RightMenu[] = [
   {
     label: "撤销",
     name: "undo",
+    keyboard: ["ctrl+z"],
     icon: () => <back theme="outline" size="24" fill="#333" />,
   },
   {
     label: "删除",
     name: "delete",
+    keyboard: ["Delete", "Backspace"],
     icon: () => <delete theme="outline" size="24" fill="#333" />,
   },
 ];
