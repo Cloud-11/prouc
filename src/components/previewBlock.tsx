@@ -16,7 +16,7 @@ export default defineComponent({
     const { dragStart, dragEnd } = useDraggerHandle(addBlock, contentRef);
     return () => (
       <div
-        class="editor-left-preview"
+        class="editor-components-list-preview"
         draggable
         onDragstart={() => dragStart(component)}
         onDragend={dragEnd}>

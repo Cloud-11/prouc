@@ -1,7 +1,6 @@
-import _, { xor } from "lodash";
+import { isNumber, cloneDeep } from "lodash";
 import { Ref, toRaw } from "vue";
-import { Block } from "..";
-import { Group } from "./../index.d";
+import { Group, Block } from "./../index.d";
 export interface RightMenu {
   label: string;
   name: CommandName;
@@ -25,7 +24,6 @@ export type CommandName =
   | "down"
   | "undo"
   | "delete";
-const operation = () => {};
 
 export type Commands = {
   [key in CommandName]: Function;
@@ -56,33 +54,29 @@ export const useRightMenuHandler = (
         count = 0;
 
       focusAndBlocks.value.focusBlocks.forEach(b => {
-        const block = _.cloneDeep(b);
+        const block = cloneDeep(b);
         removeBlock(b.id, "group");
-        top = count == 0 ? block.top : Math.min(top, block.top);
-        left = count == 0 ? block.left : Math.min(left, block.left);
+        top = count == 0 ? block.attr.offsetY : Math.min(top, block.attr.offsetY);
+        left = count == 0 ? block.attr.offsetX : Math.min(left, block.attr.offsetX);
         count++;
         blocks.push(block);
       });
       blocks.forEach(block => {
         block.group = true;
-        block.focus = false;
-        width = Math.max(width, block.left + block.width - left);
-        height = Math.max(height, block.top + block.height - top);
-        block.top = block.top - top;
-        block.left = block.left - left;
+        block.status.focus = false;
+        width = Math.max(width, block.attr.offsetX + block.attr.width - left);
+        height = Math.max(height, block.attr.offsetY + block.attr.height - top);
+        block.attr.offsetY -= top;
+        block.attr.offsetX -= left;
       });
 
       addBlock(
         {
           type: "group",
           group: false,
-          top,
-          left,
-          width,
-          height,
-          focus: true,
+          attr: { top, left, width, height, zIndex: 1 },
+          status: { focus: true, lock: false },
           blocks,
-          zIndex: 1,
         },
         "group"
       );
@@ -90,10 +84,10 @@ export const useRightMenuHandler = (
     ungroup: () => {
       const group = focusAndBlocks.value.focusBlocks[0] as Group;
       group.blocks.forEach(b => {
-        const block = _.cloneDeep(b);
+        const block = cloneDeep(b);
         block.group = false;
-        block.top = group.top + block.top;
-        block.left = group.left + block.left;
+        block.attr.offsetY += group.attr.offsetY;
+        block.attr.offsetX += group.attr.offsetX;
         addBlock(block, "ungroup");
       });
       removeBlock(group.id, "ungroup");
@@ -105,11 +99,11 @@ export const useRightMenuHandler = (
       let { clientX: x, clientY: y } = e;
       clipboard.value = [];
       focusBlocks.forEach(block => {
-        const b = _.cloneDeep(block);
+        const b = cloneDeep(block);
         clipboard.value.push(b);
         if (x == undefined) {
-          x = b.left + offsetLeft;
-          y = b.top + offsetTop;
+          x = b.attr.offsetX + offsetLeft;
+          y = b.attr.offsetY + offsetTop;
         }
       });
       copyMousePos.value = { x, y, copyNum: 0 };
@@ -139,44 +133,32 @@ export const useRightMenuHandler = (
           left = 0;
         if (copyMousePos.value.x && clientX) {
           //拷贝时鼠标位置 和各组件相对差值
-          left = mousePosX - (copyMousePosX - b.left);
-          top = mousePosY - (copyMousePosY - b.top);
+          left = mousePosX - (copyMousePosX - b.attr.offsetX);
+          top = mousePosY - (copyMousePosY - b.attr.offsetY);
         } else {
           copyMousePos.value.copyNum++;
-          top = b.top + copyMousePos.value.copyNum * 20;
-          left = b.left + copyMousePos.value.copyNum * 20;
+          top = b.attr.offsetY + copyMousePos.value.copyNum * 20;
+          left = b.attr.offsetX + copyMousePos.value.copyNum * 20;
         }
         //当前鼠标位置 加差值复原各组件相对位置
-        addBlock(
-          {
-            ...b,
-            foucs: true,
-            top,
-            left,
-          },
-          index == clipboard.value.length - 1 ? "copyOver" : "copy"
-        );
+        const block = cloneDeep(b);
+        block.attr.offsetX = left;
+        block.attr.offsetY = top;
+        block.status.focus = true;
+        addBlock(block, index == clipboard.value.length - 1 ? "copyOver" : "copy");
       });
     },
     toTop: () => {
-      focusAndBlocks.value.focusBlocks.forEach(b => {
-        modifyBlock(b.id, "zIndex", 999);
-      });
+      set_zIndex(999);
     },
     toBottom: () => {
-      focusAndBlocks.value.focusBlocks.forEach(b => {
-        modifyBlock(b.id, "zIndex", 1);
-      });
+      set_zIndex(1);
     },
     up: () => {
-      focusAndBlocks.value.focusBlocks.forEach(b => {
-        modifyBlock(b.id, "zIndex", b.zIndex + 1);
-      });
+      set_zIndex("+");
     },
     down: () => {
-      focusAndBlocks.value.focusBlocks.forEach(b => {
-        modifyBlock(b.id, "zIndex", b.zIndex - 1);
-      });
+      set_zIndex("-");
     },
     undo: () => {
       undoRecordOpts();
@@ -187,6 +169,22 @@ export const useRightMenuHandler = (
         removeBlock(b.id);
       });
     },
+  };
+  const set_zIndex = (zIndex: number | string) => {
+    focusAndBlocks.value.focusBlocks.forEach(b => {
+      const block = cloneDeep(b);
+      if (isNumber(zIndex)) {
+        block.attr.zIndex = zIndex;
+      } else {
+        if (zIndex === "+") {
+          block.attr.zIndex++;
+        } else {
+          block.attr.zIndex--;
+        }
+      }
+
+      modifyBlock(b.id, "attr.zIndex", block);
+    });
   };
   return commands;
 };

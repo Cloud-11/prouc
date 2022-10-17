@@ -1,6 +1,7 @@
 import { Ref } from "vue";
 import { Block } from "@/index.d";
 import { RecordOpts } from "@/stores/jsonData";
+import { cloneDeep } from "lodash";
 
 interface LineX {
   showLeft: number;
@@ -26,10 +27,10 @@ export const useBlocsEvent = (
     unFocusBlocks: Block[];
     lastFocusBlock: Block;
   }>,
-  clearFocusBlock: Function,
-  modifyBlock: Function,
-  hiddenRightMenu: Function,
-  recordOpts: Function,
+  clearFocusBlock: () => void,
+  modifyBlock: (id: number, attrs: string, block: Block) => void,
+  hiddenRightMenu: () => void,
+  recordOpts: (opera: RecordOpts, tag?: string | undefined) => void,
   markLine: Ref<{ x: number | null; y: number | null }>,
   contentRef: Ref<HTMLElement>
 ) => {
@@ -46,12 +47,14 @@ export const useBlocsEvent = (
     hiddenRightMenu();
     //非shift清空选择
     if (!e.shiftKey) {
-      if (!block.focus) {
+      if (!block.status.focus) {
         clearFocusBlocks(clearFocusBlock, markLine);
       }
     }
     //block被选中
-    modifyBlock(block.id, "focus", true);
+    const b = cloneDeep(block);
+    b.status.focus = true;
+    modifyBlock(b.id, "status.focus", b);
 
     //block选中添加拖拽事件
     document.addEventListener("mousemove", blockMousemove);
@@ -63,10 +66,12 @@ export const useBlocsEvent = (
       lines: initLines(focusAndBlocks.value.lastFocusBlock, [
         ...focusAndBlocks.value.unFocusBlocks,
         {
-          top: 0,
-          left: 0,
-          width: contentRef.value.clientWidth,
-          height: contentRef.value.clientHeight,
+          attr: {
+            offsetY: 0,
+            offsetX: 0,
+            width: contentRef.value.clientWidth,
+            height: contentRef.value.clientHeight,
+          },
         },
       ]),
     };
@@ -77,7 +82,9 @@ export const useBlocsEvent = (
   const blockMousemove = (e: MouseEvent) => {
     let { clientX: moveX, clientY: moveY } = e;
 
-    const { top: focusTop, left: focusLeft } = focusAndBlocks.value.lastFocusBlock;
+    const {
+      attr: { offsetY: focusTop, offsetX: focusLeft },
+    } = focusAndBlocks.value.lastFocusBlock;
     const { x, y, lines } = blockStartPos;
     const newleft = moveX - x + focusLeft;
     const newtop = moveY - y + focusTop;
@@ -117,8 +124,8 @@ export const useBlocsEvent = (
       isMove = true;
       //移动所有选中的block
       focusAndBlocks.value.focusBlocks.forEach(block => {
-        block.top += dury;
-        block.left += durx;
+        block.attr.offsetY += dury;
+        block.attr.offsetX += durx;
       });
     }
 
@@ -154,12 +161,18 @@ export const clearFocusBlocks = (
 //
 const initLines = (
   lastFocusBlock: Block,
-  needLinesArr: { top: number; left: number; width: number; height: number }[]
+  needLinesArr: {
+    attr: { offsetY: number; offsetX: number; width: number; height: number };
+  }[]
 ) => {
-  const { width: focusWidth, height: focusHeight } = lastFocusBlock;
+  const {
+    attr: { width: focusWidth, height: focusHeight },
+  } = lastFocusBlock;
   const lines: Lines = { x: [], y: [] };
   needLinesArr.forEach(block => {
-    const { top, left, width, height } = block;
+    const {
+      attr: { offsetY: top, offsetX: left, width, height },
+    } = block;
 
     //---横线 依据top值 ---
     //底对顶

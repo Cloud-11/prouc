@@ -1,13 +1,23 @@
 import { Ref } from "vue";
-import { Block, MaskArea } from "../index";
+import { Block, Container, MaskArea } from "../index";
 
-const collide = (rect1: Block, rect2: Ref<MaskArea>) => {
+const collide = (
+  rect1: Block,
+  rect2: Ref<MaskArea>,
+  contentRef: Ref<HTMLElement | null>,
+  container: Ref<Container>
+) => {
+  const {
+    attr: { width: w, height: h, offsetX, offsetY },
+  } = rect1;
   const { width, height, top, left } = rect2.value;
-  const maxX = Math.max(rect1.left + rect1.width, left + width);
-  const maxY = Math.max(rect1.top + rect1.height, top + height);
-  const minX = Math.min(rect1.left, left);
-  const minY = Math.min(rect1.top, top);
-  if (maxX - minX <= rect1.width + width && maxY - minY <= rect1.height + height) {
+  const { offsetLeft, offsetTop } = contentRef.value as HTMLElement;
+  const { scale, offsetX: cx, offsetY: cy } = container.value;
+  const maxX = Math.max(offsetX + (offsetLeft + cx) / scale + h, left + width);
+  const maxY = Math.max(offsetY + (offsetTop + cy) / scale + h, top + height);
+  const minX = Math.min(offsetX + (offsetLeft + cx) / scale, left);
+  const minY = Math.min(offsetY + (offsetTop + cy) / scale, top);
+  if (maxX - minX <= w + width && maxY - minY <= h + height) {
     return true;
   } else {
     return false;

@@ -41,7 +41,7 @@ export const useRightMenuOptsStore = defineStore("rightMenuOptsStore", () => {
     } else if (name === "groupMenus") {
       focusBlocks.length != 1 ? (name = "blockMenus") : "";
     }
-    return (menus.value = map[name]);
+    menus.value = map[name];
   }
 
   return { menus, setMenus };

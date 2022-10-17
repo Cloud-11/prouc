@@ -1,9 +1,17 @@
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { computed, reactive, Ref, toRefs } from "vue";
-import { Block, BlockAttr, DATA_JSON, MaskArea, Group } from "../index.d";
+import {
+  Block,
+  DATA_JSON,
+  MaskArea,
+  Group,
+  BlockStringKey,
+  BlockValueType,
+} from "../index.d";
 import data from "../data.json";
 import { collide } from "@/utils";
 import _ from "lodash";
+import { useDomRefStore } from "./domRef";
 
 export interface Record {
   currentOpt: number;
@@ -110,7 +118,7 @@ export const useJsonDataStore = defineStore("JsonData", () => {
         const block = blocks.value.get(b.id);
         if (block) {
           Object.keys(b).forEach(key => {
-            (block[key as BlockAttr] as string | number | boolean) = b[key as BlockAttr];
+            (block[key as BlockStringKey] as BlockValueType) = b[key as BlockStringKey];
           });
         } else {
           blocks.value.set(b.id, b);
@@ -146,24 +154,38 @@ export const useJsonDataStore = defineStore("JsonData", () => {
     blocks.value.delete(id);
   }
   //修改
-  function modifyBlock(id: number, attr: BlockAttr, value: string | number | boolean) {
-    if (attr == "top" || attr == "left") {
-      recordOpts(RecordOpts.MOVE);
+  function modifyBlock(id: number, attrs: string, block: Block) {
+    const b = blocks.value.get(id);
+    if (!b) return;
+    // let attr1, attr2;
+    if (attrs.indexOf(".") !== -1) {
+      const attrstr = attrs.split(".");
+      const attr1 = attrstr[0];
+      const attr2 = attrstr[1];
+      if (attr1 === "attr") {
+        switch (attr2) {
+          case "x":
+          case "y":
+            recordOpts(RecordOpts.MOVE);
+            break;
+          case "width":
+          case "height":
+            recordOpts(RecordOpts.LAYOUT);
+            break;
+          case "zIndex":
+            recordOpts(RecordOpts.LEVEL);
+            break;
+        }
+      }
     }
-    if (attr == "width" || attr == "height") {
-      recordOpts(RecordOpts.LAYOUT);
-    }
-    if (attr == "zIndex") {
-      recordOpts(RecordOpts.LEVEL);
-    }
-    ((blocks.value.get(id) as Block)[attr] as string | number | boolean) = value;
+    _.merge(b, block);
   }
   //block选中
   const focusAndBlocks = computed(() => {
     const focusBlocks: Block[] = [];
     const unFocusBlocks: Block[] = [];
     blocks.value.forEach(block =>
-      (block.focus ? focusBlocks : unFocusBlocks).push(block)
+      (block.status.focus ? focusBlocks : unFocusBlocks).push(block)
     );
     return {
       focusBlocks,
@@ -174,14 +196,16 @@ export const useJsonDataStore = defineStore("JsonData", () => {
   //清除选中
   function clearFocusBlock() {
     focusAndBlocks.value.focusBlocks.forEach(block => {
-      modifyBlock(block.id, "focus", false);
+      block.status.focus = false;
+      // modifyBlock(block.id, "status.focus", false);
     });
   }
+  const { contentRef } = storeToRefs(useDomRefStore());
   //多选
   function multipleBlock(maskArea: Ref<MaskArea>) {
     blocks.value.forEach(block => {
-      if (collide(block, maskArea)) {
-        modifyBlock(block.id, "focus", true);
+      if (collide(block, maskArea, contentRef, container)) {
+        block.status.focus = true;
       }
     });
   }

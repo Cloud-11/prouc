@@ -1,7 +1,11 @@
 import { Ref } from "vue";
 import { Component } from "@/configs/editorComponentsConfig";
+import { Block } from "..";
 
-export const useDraggerHandle = (addBlock: Function, contentRef: Ref<HTMLElement>) => {
+export const useDraggerHandle = (
+  addBlock: (block: Block, tag?: string) => void,
+  contentRef: Ref<HTMLElement>
+) => {
   let currentComponent: Component | null;
   const dragenter = (e: DragEvent) => {
     //元素检测到拖动进入 设置禁用标识
@@ -20,14 +24,19 @@ export const useDraggerHandle = (addBlock: Function, contentRef: Ref<HTMLElement
     if (!currentComponent) return;
     const { type } = currentComponent as Component;
     const block = {
+      id: 0,
       type,
       group: false,
-      focus: false,
-      zIndex: 1,
-      top: e.offsetY,
-      left: e.offsetX,
-      width: 0,
-      height: 0,
+      status: { focus: false, lock: false },
+      attr: {
+        x: 0,
+        y: 0,
+        zIndex: 1,
+        offsetY: e.offsetY,
+        offsetX: e.offsetX,
+        width: 0,
+        height: 0,
+      },
     };
     addBlock(block);
     currentComponent = null;

@@ -26,20 +26,20 @@ const EditorBlock = defineComponent({
     const { markLine } = storeToRefs(globalDataStore);
     let blockStyles = computed(() => {
       return {
-        top: block.top + "px",
-        left: block.left + "px",
-        zIndex: block.zIndex,
+        top: block.attr.offsetY + "px",
+        left: block.attr.offsetX + "px",
+        zIndex: block.attr.zIndex,
       };
     });
     const { componentsConfig } = useComponentsConfigStore();
     let innerRender = () => {};
     if (block.type == "group") {
       blockStyles = computed(() => ({
-        top: block.top + "px",
-        left: block.left + "px",
-        width: block.width + "px",
-        height: block.height + "px",
-        zIndex: block.zIndex,
+        top: block.attr.offsetY + "px",
+        left: block.attr.offsetX + "px",
+        width: block.attr.width + "px",
+        height: block.attr.height + "px",
+        zIndex: block.attr.zIndex,
       }));
       //组合
       innerRender = slots.default as Slot;
@@ -72,12 +72,16 @@ const EditorBlock = defineComponent({
     const blockRef: Ref<HTMLElement | null> = ref(null);
     onMounted(() => {
       //(props.block as Block).width==0 代表拖拽进来的需要调整位置
-      if (block.type !== "group" && !block.group && (props.block as Block).width == 0) {
+      if (
+        block.type !== "group" &&
+        !block.group &&
+        (props.block as Block).attr.width == 0
+      ) {
         const { offsetWidth, offsetHeight } = blockRef.value as HTMLElement;
-        (props.block as Block).left -= offsetWidth / 2;
-        (props.block as Block).top -= offsetHeight / 2;
-        (props.block as Block).width = offsetWidth;
-        (props.block as Block).height = offsetHeight;
+        (props.block as Block).attr.offsetX -= offsetWidth / 2;
+        (props.block as Block).attr.offsetY -= offsetHeight / 2;
+        (props.block as Block).attr.width = offsetWidth;
+        (props.block as Block).attr.height = offsetHeight;
       }
     });
 

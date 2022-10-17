@@ -7,12 +7,14 @@ import { useDomRefStore, useGlobalDataStore, useJsonDataStore } from "./stores";
 import { onMounted, onUnmounted, provide, Ref } from "vue";
 import { useKeyDownEvent } from "@/hooks/useKeyDownEvent";
 import rightMenuOpts from "@/configs/menusConfig";
+import { useRegisterRightMenu } from "./hooks/useRightMenu";
+import { useContainerFuncKey } from "./hooks/useContainerEvent";
 
 const { focusAndBlocks } = storeToRefs(useJsonDataStore());
 const { addBlock, modifyBlock, removeBlock, clearFocusBlock, undoRecordOpts } = useJsonDataStore();
 const { contentRef } = storeToRefs(useDomRefStore());
 const { clipboard, copyMousePos } = storeToRefs(useGlobalDataStore());
-//初始化快捷键功能
+//初始化所有右键功能
 const commands = useRightMenuHandler(
     focusAndBlocks,
     removeBlock,
@@ -23,7 +25,18 @@ const commands = useRightMenuHandler(
     clipboard,
     copyMousePos
 );
-const { init, destory } = useKeyDownEvent(commands, rightMenuOpts);
+const { rightMenuKeyboard } = useRegisterRightMenu(commands, rightMenuOpts)
+
+const { init, destory, registerKeyboard } = useKeyDownEvent();
+
+const { containerFuncKeyDown, containerFuncKeyUp, isShowContainerMask } = useContainerFuncKey();
+
+//注册全局快捷键
+registerKeyboard(rightMenuKeyboard)
+registerKeyboard(containerFuncKeyDown, containerFuncKeyUp)
+
+provide("isShowContainerMask", isShowContainerMask)
+
 onMounted(() => init());
 onUnmounted(() => destory());
 provide("commands", commands)
