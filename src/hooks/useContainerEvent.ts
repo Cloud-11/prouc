@@ -11,7 +11,8 @@ export const useContainerEvent = (
 ) => {
   const { initMaskPos, maskMove, resetMask, isShowSelectMask, maskArea } = useMultMask(
     multipleBlock,
-    container
+    container,
+    containerRef
   );
 
   const containerMouseDown = (e: MouseEvent) => {

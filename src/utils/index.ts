@@ -7,17 +7,26 @@ const collide = (
   contentRef: Ref<HTMLElement | null>,
   container: Ref<Container>
 ) => {
-  const {
-    attr: { width: w, height: h, offsetX, offsetY },
-  } = rect1;
+  const { width: w, height: h, offsetX, offsetY } = rect1.attr;
   const { width, height, top, left } = rect2.value;
-  const { offsetLeft, offsetTop } = contentRef.value as HTMLElement;
-  const { scale, offsetX: cx, offsetY: cy } = container.value;
-  const maxX = Math.max(offsetX + (offsetLeft + cx) / scale + h, left + width);
-  const maxY = Math.max(offsetY + (offsetTop + cy) / scale + h, top + height);
-  const minX = Math.min(offsetX + (offsetLeft + cx) / scale, left);
-  const minY = Math.min(offsetY + (offsetTop + cy) / scale, top);
-  if (maxX - minX <= w + width && maxY - minY <= h + height) {
+  const { offsetTop: ctt, offsetLeft: ctl } = contentRef.value as HTMLElement;
+  const { width: cw, height: ch, scale, offsetX: cx, offsetY: cy } = container.value;
+
+  // container.top
+  //       +content.top+(content.height*(1-scale))/2
+  //       +(block.top*scale)
+
+  //  cl+ctl+(cw*(1-scale))/2+offsetX*scale
+  const cwS = (cw * (1 - scale)) / 2;
+  // const wS = (w * (1 - scale)) / 2;
+  const chS = (ch * (1 - scale)) / 2;
+  // const hS = (h * (1 - scale)) / 2;
+  const maxX = Math.max(ctl + cwS + offsetX * scale + w * scale + cx, left + width);
+  const maxY = Math.max(ctt + chS + offsetY * scale + h * scale + cy, top + height);
+  const minX = Math.min(ctl + cwS + offsetX * scale + cx, left);
+  const minY = Math.min(ctt + chS + offsetY * scale + cy, top);
+
+  if (maxX - minX <= w * scale + width && maxY - minY <= h * scale + height) {
     return true;
   } else {
     return false;

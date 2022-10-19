@@ -4,7 +4,8 @@ import { MaskArea, Container } from "..";
 //框选
 export default function useMultMask(
   multipleBlock: (maskArea: Ref<MaskArea>) => void,
-  container: Ref<Container>
+  container: Ref<Container>,
+  containerRef: Ref<HTMLElement>
 ) {
   //渲染组件框选
   const isShowSelectMask = ref(false);
@@ -16,17 +17,14 @@ export default function useMultMask(
     left: 0,
   });
   const initMaskPos = (e: MouseEvent) => {
-    const { clientX, clientY, offsetX, offsetY } = e;
-    const { offsetTop, offsetLeft } = e.target as HTMLElement;
-    const { scale, offsetX: cx, offsetY: cy } = container.value;
-    console.log(e);
-
+    const { clientX, clientY } = e;
+    const { offsetTop, offsetLeft } = containerRef.value.offsetParent as HTMLElement;
     //记录初始位置
     startPos = {
       x: clientX,
       y: clientY,
-      cx: clientX - offsetX - (offsetLeft + cx) / scale,
-      cy: clientY - offsetY - (offsetTop + cy) / scale,
+      cx: offsetLeft,
+      cy: offsetTop,
     };
 
     //绘制框选遮罩

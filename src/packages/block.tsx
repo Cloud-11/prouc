@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, Ref, ref, Slot } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, Slot, watchEffect } from "vue";
 import { Block } from "..";
 import { useRightMenu } from "@/hooks/useRightMenu";
 import { useBlocsEvent } from "@/hooks/useBlockEvent";
@@ -19,28 +19,37 @@ const EditorBlock = defineComponent({
     const block = props.block as Block;
     const JsonDataStore = useJsonDataStore();
     const { modifyBlock, clearFocusBlock, recordOpts } = JsonDataStore;
-    const { focusAndBlocks } = storeToRefs(JsonDataStore);
-    const DomRefStore = useDomRefStore();
-    const contentRef = storeToRefs(DomRefStore).contentRef as Ref<HTMLElement>;
+    const { focusAndBlocks, container } = storeToRefs(JsonDataStore);
+    const { contentRef, containerRef } = storeToRefs(useDomRefStore());
     const globalDataStore = useGlobalDataStore();
     const { markLine } = storeToRefs(globalDataStore);
-    let blockStyles = computed(() => {
-      return {
-        top: block.attr.offsetY + "px",
-        left: block.attr.offsetX + "px",
-        zIndex: block.attr.zIndex,
+    // let blockStyles = computed(() => {
+    //   const { offsetY, offsetX, zIndex } = block.attr;
+    //   return {
+    //     top: offsetY + "px",
+    //     left: offsetX + "px",
+    //     zIndex: zIndex,
+    //   };
+    // });
+    const blockStyles = computed(() => {
+      const { offsetY, offsetX, width, height, zIndex } = block.attr;
+      const blockstyle = {
+        top: offsetY + "px",
+        left: offsetX + "px",
+        zIndex: zIndex,
       };
+      return width === 0 && height === 0
+        ? blockstyle
+        : {
+            ...blockstyle,
+            width: width + "px",
+            height: height + "px",
+          };
     });
+
     const { componentsConfig } = useComponentsConfigStore();
     let innerRender = () => {};
     if (block.type == "group") {
-      blockStyles = computed(() => ({
-        top: block.attr.offsetY + "px",
-        left: block.attr.offsetX + "px",
-        width: block.attr.width + "px",
-        height: block.attr.height + "px",
-        zIndex: block.attr.zIndex,
-      }));
       //组合
       innerRender = slots.default as Slot;
     } else {
@@ -59,17 +68,23 @@ const EditorBlock = defineComponent({
 
     //渲染组件选择、拖拽
     const { blockMousedown } = useBlocsEvent(
+      container,
       focusAndBlocks,
       clearFocusBlock,
       modifyBlock,
       hiddenRightMenu,
       recordOpts,
       markLine,
-      contentRef
+      contentRef as Ref<HTMLElement>
     );
 
     //渲染完成更新大小位置
     const blockRef: Ref<HTMLElement | null> = ref(null);
+    const containerBox = (containerRef.value as HTMLElement).offsetParent as HTMLElement;
+    const containerX =
+      containerBox.offsetLeft + (contentRef.value as HTMLElement).offsetLeft;
+    const containerY =
+      containerBox.offsetTop + (contentRef.value as HTMLElement).offsetTop;
     onMounted(() => {
       //(props.block as Block).width==0 代表拖拽进来的需要调整位置
       if (
@@ -83,6 +98,11 @@ const EditorBlock = defineComponent({
         (props.block as Block).attr.width = offsetWidth;
         (props.block as Block).attr.height = offsetHeight;
       }
+    });
+
+    watchEffect(() => {
+      (props.block as Block).attr.x = containerX + (props.block as Block).attr.offsetX;
+      (props.block as Block).attr.y = containerY + (props.block as Block).attr.offsetY;
     });
 
     //右键菜单

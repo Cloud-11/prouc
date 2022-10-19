@@ -56,25 +56,25 @@ export const useRightMenuHandler = (
       focusAndBlocks.value.focusBlocks.forEach(b => {
         const block = cloneDeep(b);
         removeBlock(b.id, "group");
-        top = count == 0 ? block.attr.offsetY : Math.min(top, block.attr.offsetY);
-        left = count == 0 ? block.attr.offsetX : Math.min(left, block.attr.offsetX);
+        top = count == 0 ? block.attr.offsetY : Math.min(top, block.attr.offsetY - 1);
+        left = count == 0 ? block.attr.offsetX : Math.min(left, block.attr.offsetX - 1);
         count++;
         blocks.push(block);
       });
       blocks.forEach(block => {
         block.group = true;
         block.status.focus = false;
-        width = Math.max(width, block.attr.offsetX + block.attr.width - left);
-        height = Math.max(height, block.attr.offsetY + block.attr.height - top);
-        block.attr.offsetY -= top;
+        width = Math.max(width, block.attr.offsetX + block.attr.width - left + 3);
+        height = Math.max(height, block.attr.offsetY + block.attr.height - top + 1);
         block.attr.offsetX -= left;
+        block.attr.offsetY -= top;
       });
 
       addBlock(
         {
           type: "group",
           group: false,
-          attr: { top, left, width, height, zIndex: 1 },
+          attr: { x: 0, y: 0, offsetY: top, offsetX: left, width, height, zIndex: 1 },
           status: { focus: true, lock: false },
           blocks,
         },
@@ -86,55 +86,38 @@ export const useRightMenuHandler = (
       group.blocks.forEach(b => {
         const block = cloneDeep(b);
         block.group = false;
-        block.attr.offsetY += group.attr.offsetY;
-        block.attr.offsetX += group.attr.offsetX;
+        block.attr.offsetY += group.attr.offsetY + 1;
+        block.attr.offsetX += group.attr.offsetX + 1;
         addBlock(block, "ungroup");
       });
       removeBlock(group.id, "ungroup");
     },
     copy: (e: MouseEvent) => {
-      console.log("copy", focusAndBlocks);
-      const { offsetTop, offsetLeft } = contentRef.value;
-      const { focusBlocks } = toRaw(focusAndBlocks.value);
-      let { clientX: x, clientY: y } = e;
+      let x = 0,
+        y = 0; //{ clientX: x, clientY: y } = e;
       clipboard.value = [];
-      focusBlocks.forEach(block => {
+      focusAndBlocks.value.focusBlocks.forEach(block => {
         const b = cloneDeep(block);
         clipboard.value.push(b);
-        if (x == undefined) {
-          x = b.attr.offsetX + offsetLeft;
-          y = b.attr.offsetY + offsetTop;
+        if (x == 0) {
+          x = b.attr.x;
+          y = b.attr.y;
         }
       });
       copyMousePos.value = { x, y, copyNum: 0 };
     },
     paste: (e: MouseEvent) => {
-      console.log("paste");
-      const { offsetTop, offsetLeft } = contentRef.value;
       if (clipboard.value.length == 0) return;
       const { clientX, clientY } = e;
 
-      let mousePosX = 0,
-        mousePosY = 0,
-        copyMousePosY = 0,
-        copyMousePosX = 0;
-
-      if (copyMousePos.value.x && clientX) {
-        //当前鼠标位置 依据content重新定位
-        mousePosX = clientX - offsetLeft;
-        mousePosY = clientY - offsetTop;
-        //拷贝时鼠标位置 依据content重新定位
-        copyMousePosY = copyMousePos.value.y - offsetTop;
-        copyMousePosX = copyMousePos.value.x - offsetLeft;
-      }
       clearFocusBlock();
       clipboard.value.forEach((b, index) => {
         let top = 0,
           left = 0;
-        if (copyMousePos.value.x && clientX) {
+        if (clientX) {
           //拷贝时鼠标位置 和各组件相对差值
-          left = mousePosX - (copyMousePosX - b.attr.offsetX);
-          top = mousePosY - (copyMousePosY - b.attr.offsetY);
+          left = clientX - copyMousePos.value.x + b.attr.offsetX;
+          top = clientY - copyMousePos.value.y + b.attr.offsetY;
         } else {
           copyMousePos.value.copyNum++;
           top = b.attr.offsetY + copyMousePos.value.copyNum * 20;

@@ -1,5 +1,5 @@
 import { Ref } from "vue";
-import { Block } from "@/index.d";
+import { Block, Container } from "@/index.d";
 import { RecordOpts } from "@/stores/jsonData";
 import { cloneDeep } from "lodash";
 
@@ -22,6 +22,7 @@ interface BlockStartPos {
 }
 
 export const useBlocsEvent = (
+  container: Ref<Container>,
   focusAndBlocks: Ref<{
     focusBlocks: Block[];
     unFocusBlocks: Block[];
@@ -34,7 +35,6 @@ export const useBlocsEvent = (
   markLine: Ref<{ x: number | null; y: number | null }>,
   contentRef: Ref<HTMLElement>
 ) => {
-  //
   let blockStartPos: BlockStartPos = {
     x: 0,
     y: 0,
@@ -82,10 +82,10 @@ export const useBlocsEvent = (
   const blockMousemove = (e: MouseEvent) => {
     let { clientX: moveX, clientY: moveY } = e;
 
-    const {
-      attr: { offsetY: focusTop, offsetX: focusLeft },
-    } = focusAndBlocks.value.lastFocusBlock;
+    const { offsetY: focusTop, offsetX: focusLeft } =
+      focusAndBlocks.value.lastFocusBlock.attr;
     const { x, y, lines } = blockStartPos;
+    const { scale } = container.value;
     const newleft = moveX - x + focusLeft;
     const newtop = moveY - y + focusTop;
 
@@ -118,8 +118,10 @@ export const useBlocsEvent = (
       moveX = x - focusLeft + activeLeft;
       markLine.value.x = showLeft;
     }
-    const durx = moveX - x;
-    const dury = moveY - y;
+    //处理缩放问题
+    const durx = (moveX - x) / scale;
+    const dury = (moveY - y) / scale;
+
     if (durx != 0 || dury != 0) {
       isMove = true;
       //移动所有选中的block
