@@ -34,7 +34,8 @@ export default defineComponent({
     const containerMaskRef = ref();
     const { containerMaskMouseDown, containerMaskMousewheel } = useContainerMaskEvent(
       containerMaskRef,
-      container
+      container,
+      isShowContainerMask
     );
 
     return () => (

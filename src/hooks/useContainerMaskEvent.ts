@@ -1,9 +1,10 @@
-import { Ref } from "vue";
+import { Ref, watch } from "vue";
 import { Container } from "../index.d";
 
 export default function useContainerMaskEvent(
   containerMaskRef: Ref<HTMLElement>,
-  container: Ref<Container>
+  container: Ref<Container>,
+  isShowContainerMask: Ref<boolean>
 ) {
   let mousePos = { x: 0, y: 0 };
   const containerMaskMouseDown = (e: MouseEvent) => {
@@ -27,6 +28,8 @@ export default function useContainerMaskEvent(
     containerMaskRef.value.removeEventListener("mousemove", containerMaskMouseMove);
     containerMaskRef.value.removeEventListener("mouseup", containerMaskMouseUp);
   };
+  //不显示 移除事件监听
+  watch(isShowContainerMask, () => containerMaskMouseUp());
   const containerMaskMousewheel = (e: WheelEvent) => {
     e.preventDefault();
     if (e.deltaY < 0) {

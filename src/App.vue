@@ -4,15 +4,15 @@ import RightMenu from "@/components/rightMenu";
 import { useRightMenuHandler } from "./configs/menusConfig";
 import { storeToRefs } from "pinia";
 import { useDomRefStore, useGlobalDataStore, useJsonDataStore } from "./stores";
-import { onMounted, onUnmounted, provide, Ref } from "vue";
+import { onMounted, onUnmounted, provide, Ref, watch } from "vue";
 import { useKeyDownEvent } from "@/hooks/useKeyDownEvent";
 import rightMenuOpts from "@/configs/menusConfig";
 import { useRegisterRightMenu } from "./hooks/useRightMenu";
 import { useContainerFuncKey } from "./hooks/useContainerEvent";
 
-const { focusAndBlocks } = storeToRefs(useJsonDataStore());
+const { focusAndBlocks, container } = storeToRefs(useJsonDataStore());
 const { addBlock, modifyBlock, removeBlock, clearFocusBlock, undoRecordOpts } = useJsonDataStore();
-const { contentRef } = storeToRefs(useDomRefStore());
+const { containerRef, contentRef } = storeToRefs(useDomRefStore());
 const { clipboard, copyMousePos } = storeToRefs(useGlobalDataStore());
 //初始化所有右键功能
 const commands = useRightMenuHandler(
@@ -21,7 +21,9 @@ const commands = useRightMenuHandler(
     addBlock,
     modifyBlock,
     clearFocusBlock, undoRecordOpts,
+    containerRef as Ref<HTMLElement>,
     contentRef as Ref<HTMLElement>,
+    container,
     clipboard,
     copyMousePos
 );

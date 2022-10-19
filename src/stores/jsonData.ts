@@ -200,11 +200,11 @@ export const useJsonDataStore = defineStore("JsonData", () => {
       // modifyBlock(block.id, "status.focus", false);
     });
   }
-  const { contentRef } = storeToRefs(useDomRefStore());
+  const { containerRef } = storeToRefs(useDomRefStore());
   //多选
   function multipleBlock(maskArea: Ref<MaskArea>) {
     blocks.value.forEach(block => {
-      if (collide(block, maskArea, contentRef, container)) {
+      if (collide(block, maskArea, containerRef, container)) {
         block.status.focus = true;
       }
     });

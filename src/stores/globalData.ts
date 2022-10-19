@@ -8,6 +8,6 @@ export const useGlobalDataStore = defineStore("globalDataStore", () => {
   }
 
   let clipboard: Ref<Block[]> = ref([]);
-  let copyMousePos = ref({ x: 0, y: 0, copyNum: 0 });
+  let copyMousePos = ref({ x: 0, y: 0, copyScale: 1, copyNum: 0 });
   return { markLine, setMarkLine, clipboard, copyMousePos };
 });

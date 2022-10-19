@@ -1,4 +1,13 @@
-import { computed, defineComponent, onMounted, Ref, ref, Slot, watchEffect } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  Ref,
+  ref,
+  Slot,
+  watch,
+  watchEffect,
+} from "vue";
 import { Block } from "..";
 import { useRightMenu } from "@/hooks/useRightMenu";
 import { useBlocsEvent } from "@/hooks/useBlockEvent";
@@ -23,14 +32,7 @@ const EditorBlock = defineComponent({
     const { contentRef, containerRef } = storeToRefs(useDomRefStore());
     const globalDataStore = useGlobalDataStore();
     const { markLine } = storeToRefs(globalDataStore);
-    // let blockStyles = computed(() => {
-    //   const { offsetY, offsetX, zIndex } = block.attr;
-    //   return {
-    //     top: offsetY + "px",
-    //     left: offsetX + "px",
-    //     zIndex: zIndex,
-    //   };
-    // });
+
     const blockStyles = computed(() => {
       const { offsetY, offsetX, width, height, zIndex } = block.attr;
       const blockstyle = {
@@ -86,23 +88,22 @@ const EditorBlock = defineComponent({
     const containerY =
       containerBox.offsetTop + (contentRef.value as HTMLElement).offsetTop;
     onMounted(() => {
-      //(props.block as Block).width==0 代表拖拽进来的需要调整位置
-      if (
-        block.type !== "group" &&
-        !block.group &&
-        (props.block as Block).attr.width == 0
-      ) {
+      //block.width==0 代表拖拽进来的需要调整位置
+      if (block.type !== "group" && !block.group && block.attr.width == 0) {
         const { offsetWidth, offsetHeight } = blockRef.value as HTMLElement;
-        (props.block as Block).attr.offsetX -= offsetWidth / 2;
-        (props.block as Block).attr.offsetY -= offsetHeight / 2;
-        (props.block as Block).attr.width = offsetWidth;
-        (props.block as Block).attr.height = offsetHeight;
+        block.attr.offsetX -= offsetWidth / 2;
+        block.attr.offsetY -= offsetHeight / 2;
+        block.attr.width = offsetWidth;
+        block.attr.height = offsetHeight;
       }
     });
 
     watchEffect(() => {
-      (props.block as Block).attr.x = containerX + (props.block as Block).attr.offsetX;
-      (props.block as Block).attr.y = containerY + (props.block as Block).attr.offsetY;
+      const { width: cw, height: ch, scale, offsetX: cx, offsetY: cy } = container.value;
+      const cwS = (cw * (1 - scale)) / 2;
+      const chS = (ch * (1 - scale)) / 2;
+      block.attr.x = containerX + cwS + block.attr.offsetX * scale + cx;
+      block.attr.y = containerY + chS + block.attr.offsetY * scale + cy;
     });
 
     //右键菜单

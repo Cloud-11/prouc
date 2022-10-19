@@ -1,6 +1,7 @@
 import { isNumber, cloneDeep } from "lodash";
-import { Ref, toRaw } from "vue";
+import { Ref } from "vue";
 import { Group, Block } from "./../index.d";
+import { Container } from "..";
 export interface RightMenu {
   label: string;
   name: CommandName;
@@ -40,9 +41,11 @@ export const useRightMenuHandler = (
   modifyBlock: Function,
   clearFocusBlock: Function,
   undoRecordOpts: Function,
+  containerRef: Ref<HTMLElement>,
   contentRef: Ref<HTMLElement>,
+  container: Ref<Container>,
   clipboard: Ref<Block[]>,
-  copyMousePos: Ref<{ x: number; y: number; copyNum: number }>
+  copyMousePos: Ref<{ x: number; y: number; copyScale: number; copyNum: number }>
 ): Commands => {
   const commands = {
     group: () => {
@@ -94,7 +97,7 @@ export const useRightMenuHandler = (
     },
     copy: (e: MouseEvent) => {
       let x = 0,
-        y = 0; //{ clientX: x, clientY: y } = e;
+        y = 0;
       clipboard.value = [];
       focusAndBlocks.value.focusBlocks.forEach(block => {
         const b = cloneDeep(block);
@@ -104,29 +107,49 @@ export const useRightMenuHandler = (
           y = b.attr.y;
         }
       });
-      copyMousePos.value = { x, y, copyNum: 0 };
+      const { scale } = container.value;
+      copyMousePos.value = { x, y, copyScale: scale, copyNum: 0 };
     },
     paste: (e: MouseEvent) => {
       if (clipboard.value.length == 0) return;
       const { clientX, clientY } = e;
-
+      const { scale } = container.value;
       clearFocusBlock();
+
+      let { x, y, copyScale } = copyMousePos.value;
+
       clipboard.value.forEach((b, index) => {
-        let top = 0,
-          left = 0;
+        let dury = 0,
+          durx = 0;
         if (clientX) {
+          //复制和粘贴的缩放值不一样要重新计算复制时元素的client位置
+          if (copyScale !== scale) {
+            const containerBox = containerRef.value.offsetParent as HTMLElement;
+            const containerX = containerBox.offsetLeft + contentRef.value.offsetLeft;
+            const containerY = containerBox.offsetTop + contentRef.value.offsetTop;
+            const {
+              width: cw,
+              height: ch,
+              scale,
+              offsetX: cx,
+              offsetY: cy,
+            } = container.value;
+            const cwS = (cw * (1 - scale)) / 2;
+            const chS = (ch * (1 - scale)) / 2;
+            const { offsetX: ox, offsetY: oy } = clipboard.value[0].attr;
+            x = containerX + cwS + ox * scale + cx;
+            y = containerY + chS + oy * scale + cy;
+          }
           //拷贝时鼠标位置 和各组件相对差值
-          left = clientX - copyMousePos.value.x + b.attr.offsetX;
-          top = clientY - copyMousePos.value.y + b.attr.offsetY;
+          durx = (clientX - x) / scale;
+          dury = (clientY - y) / scale;
         } else {
-          copyMousePos.value.copyNum++;
-          top = b.attr.offsetY + copyMousePos.value.copyNum * 20;
-          left = b.attr.offsetX + copyMousePos.value.copyNum * 20;
+          durx = dury = ++copyMousePos.value.copyNum * 20;
         }
         //当前鼠标位置 加差值复原各组件相对位置
         const block = cloneDeep(b);
-        block.attr.offsetX = left;
-        block.attr.offsetY = top;
+        block.attr.offsetX += durx;
+        block.attr.offsetY += dury;
         block.status.focus = true;
         addBlock(block, index == clipboard.value.length - 1 ? "copyOver" : "copy");
       });
