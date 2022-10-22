@@ -41,10 +41,17 @@ export interface Block {
   group: boolean;
   attr: BlockAttr;
   status: BlockStatus;
+  formData: BlockFormData;
+}
+export interface BlockFormData {
+  [key: string]: any;
 }
 export interface MaskArea {
   width: number;
   height: number;
   top: number;
   left: number;
+}
+export interface AnyObject {
+  [key: string]: any;
 }

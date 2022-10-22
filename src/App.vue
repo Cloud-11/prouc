@@ -4,11 +4,12 @@ import RightMenu from "@/components/rightMenu";
 import { useRightMenuHandler } from "./configs/menusConfig";
 import { storeToRefs } from "pinia";
 import { useDomRefStore, useGlobalDataStore, useJsonDataStore } from "./stores";
-import { onMounted, onUnmounted, provide, Ref, watch } from "vue";
+import { onMounted, onUnmounted, provide, Ref } from "vue";
 import { useKeyDownEvent } from "@/hooks/useKeyDownEvent";
 import rightMenuOpts from "@/configs/menusConfig";
 import { useRegisterRightMenu } from "./hooks/useRightMenu";
 import { useContainerFuncKey } from "./hooks/useContainerEvent";
+import { Undo, Upload, Download } from "@icon-park/vue-next"
 
 const { focusAndBlocks, container } = storeToRefs(useJsonDataStore());
 const { addBlock, modifyBlock, removeBlock, clearFocusBlock, undoRecordOpts } = useJsonDataStore();
@@ -47,7 +48,24 @@ provide("commands", commands)
 <template>
     <header class="header">
         <div class="header-item left"></div>
-        <div class="header-item center">工作画布</div>
+        <div class="header-item center">
+            <el-button>撤销
+                <template v-slot:icon>
+                    <Undo theme="outline" size="24" fill="#1890ff" />
+                </template>
+            </el-button>
+            <el-button> 导入
+                <template v-slot:icon>
+                    <upload theme="outline" size="24" fill="#1890ff" />
+                </template>
+
+            </el-button>
+            <el-button>导出
+                <template v-slot:icon>
+                    <download theme="outline" size="24" fill="#1890ff" />
+                </template>
+            </el-button>
+        </div>
         <div class="header-item right"></div>
     </header>
     <Editor></Editor>
@@ -71,7 +89,9 @@ provide("commands", commands)
     }
 
     .center {
-        background-color: bisque;
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
     }
 
     .right {

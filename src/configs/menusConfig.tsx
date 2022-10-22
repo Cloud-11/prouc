@@ -155,10 +155,18 @@ export const useRightMenuHandler = (
       });
     },
     toTop: () => {
-      set_zIndex(999);
+      const { unFocusBlocks } = focusAndBlocks.value;
+      const maxzIndex = unFocusBlocks.reduce((prev: number, block: Block) => {
+        return Math.max(prev, block.attr.zIndex);
+      }, -Infinity);
+      set_zIndex(maxzIndex + 1);
     },
     toBottom: () => {
-      set_zIndex(1);
+      const { unFocusBlocks } = focusAndBlocks.value;
+      const minzIndex = unFocusBlocks.reduce((prev: number, block: Block) => {
+        return Math.min(prev, block.attr.zIndex);
+      }, Infinity);
+      set_zIndex(minzIndex - 1);
     },
     up: () => {
       set_zIndex("+");

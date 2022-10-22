@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
+    "@lljj/vue3-form-element": "^1.14.0",
     "element-plus": "^2.2.17",
     "lodash": "^4.17.21",
     "pinia": "^2.0.23",

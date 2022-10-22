@@ -2,6 +2,8 @@ import { defineComponent } from "vue";
 import "./editor.scss";
 import PreviewBlock from "@/components/previewBlock";
 import Container from "@/components/Container";
+import ToolsBar from "@/components/toolsBar";
+import ComponentSetting from "@/components/setting";
 import { useComponentsConfigStore } from "@/stores/components";
 import { AllApplication } from "@icon-park/vue-next";
 
@@ -34,9 +36,10 @@ export default defineComponent({
         </div>
         <div class="editor-container">
           <Container></Container>
+          <ToolsBar></ToolsBar>
         </div>
         <aside>
-          <div class="editor-container-setting">设置</div>
+          <ComponentSetting></ComponentSetting>
         </aside>
       </div>
     );

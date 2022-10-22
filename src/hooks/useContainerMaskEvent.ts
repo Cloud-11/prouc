@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { Ref, watch } from "vue";
 import { Container } from "../index.d";
 
@@ -34,11 +35,11 @@ export default function useContainerMaskEvent(
     e.preventDefault();
     if (e.deltaY < 0) {
       //上滚 放大
-      if (container.value.scale >= 1.4) return;
-      container.value.scale += 0.1;
+      if (container.value.scale >= 1.5) return;
+      container.value.scale = parseFloat((container.value.scale + 0.1).toFixed(1));
     } else if (e.deltaY > 0) {
       if (container.value.scale <= 0.3) return;
-      container.value.scale -= 0.1;
+      container.value.scale = parseFloat((container.value.scale - 0.1).toFixed(1));
     }
   };
 

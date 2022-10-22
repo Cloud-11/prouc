@@ -37,6 +37,7 @@ export const useDraggerHandle = (
         width: 0,
         height: 0,
       },
+      formData: {},
     };
     addBlock(block);
     currentComponent = null;

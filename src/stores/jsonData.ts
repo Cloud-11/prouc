@@ -84,7 +84,6 @@ export const useJsonDataStore = defineStore("JsonData", () => {
     ) {
       records.currentOpt = length - 1;
     }
-    console.log(records);
   }
   //后退操作
   function undoRecordOpts() {

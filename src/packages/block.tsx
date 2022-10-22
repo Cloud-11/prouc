@@ -50,12 +50,13 @@ const EditorBlock = defineComponent({
     });
 
     const { componentsConfig } = useComponentsConfigStore();
+    const formData = computed(() => block.formData);
     let innerRender = () => {};
     if (block.type == "group") {
       //组合
       innerRender = slots.default as Slot;
     } else {
-      innerRender = componentsConfig.componentMap[block.type].render;
+      innerRender = componentsConfig.componentMap[block.type].render(formData);
     }
 
     //显示右键菜单
@@ -82,11 +83,7 @@ const EditorBlock = defineComponent({
 
     //渲染完成更新大小位置
     const blockRef: Ref<HTMLElement | null> = ref(null);
-    const containerBox = (containerRef.value as HTMLElement).offsetParent as HTMLElement;
-    const containerX =
-      containerBox.offsetLeft + (contentRef.value as HTMLElement).offsetLeft;
-    const containerY =
-      containerBox.offsetTop + (contentRef.value as HTMLElement).offsetTop;
+
     onMounted(() => {
       //block.width==0 代表拖拽进来的需要调整位置
       if (block.type !== "group" && !block.group && block.attr.width == 0) {
@@ -96,9 +93,16 @@ const EditorBlock = defineComponent({
         block.attr.width = offsetWidth;
         block.attr.height = offsetHeight;
       }
+      console.log(111111111111111);
     });
 
     watchEffect(() => {
+      const containerBox = (containerRef.value as HTMLElement)
+        .offsetParent as HTMLElement;
+      const containerX =
+        containerBox.offsetLeft + (contentRef.value as HTMLElement).offsetLeft;
+      const containerY =
+        containerBox.offsetTop + (contentRef.value as HTMLElement).offsetTop;
       const { width: cw, height: ch, scale, offsetX: cx, offsetY: cy } = container.value;
       const cwS = (cw * (1 - scale)) / 2;
       const chS = (ch * (1 - scale)) / 2;
