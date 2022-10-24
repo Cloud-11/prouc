@@ -1,25 +1,17 @@
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  Ref,
-  ref,
-  Slot,
-  watch,
-  watchEffect,
-} from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, Slot, watchEffect } from "vue";
 import { Block } from "..";
 import { useRightMenu } from "@/hooks/useRightMenu";
 import { useBlocsEvent } from "@/hooks/useBlockEvent";
 import { storeToRefs } from "pinia";
 import {
-  useComponentsConfigStore,
   useRightMenuStore,
   useJsonDataStore,
   useDomRefStore,
   useGlobalDataStore,
   useRightMenuOptsStore,
 } from "@/stores";
+import componentsConfig from "@/configs/components";
+
 const EditorBlock = defineComponent({
   props: {
     block: { type: Object },
@@ -49,14 +41,32 @@ const EditorBlock = defineComponent({
           };
     });
 
-    const { componentsConfig } = useComponentsConfigStore();
-    const formData = computed(() => block.formData);
+    // const { componentsConfig } = useComponentsConfigStore();
+    const { render, setting } = componentsConfig.componentMap[block.type];
+    let formData: any = {};
+    setting.form.schema["ui:order"].forEach(key => {
+      const attr = setting.form.schema.properties[key];
+      let value = attr.default;
+      if (!value) return;
+      switch (attr.type) {
+        case "number":
+          value = parseFloat(value);
+          break;
+        case "boolean":
+          value = value === "false" ? false : true;
+          break;
+      }
+      formData[key] = value;
+    });
+
+    block.propsData = formData;
+    const propsData = computed(() => block.propsData);
     let innerRender = () => {};
     if (block.type == "group") {
       //组合
       innerRender = slots.default as Slot;
     } else {
-      innerRender = componentsConfig.componentMap[block.type].render(formData);
+      innerRender = render(propsData);
     }
 
     //显示右键菜单
@@ -93,7 +103,6 @@ const EditorBlock = defineComponent({
         block.attr.width = offsetWidth;
         block.attr.height = offsetHeight;
       }
-      console.log(111111111111111);
     });
 
     watchEffect(() => {

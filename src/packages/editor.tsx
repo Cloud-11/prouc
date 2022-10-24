@@ -1,36 +1,23 @@
-import { defineComponent } from "vue";
+import { defineComponent, Ref, ref } from "vue";
 import "./editor.scss";
-import PreviewBlock from "@/components/previewBlock";
+import PreviewBlock from "@/components/PreviewBlock";
 import Container from "@/components/Container";
-import ToolsBar from "@/components/toolsBar";
-import ComponentSetting from "@/components/setting";
-import { useComponentsConfigStore } from "@/stores/components";
-import { AllApplication } from "@icon-park/vue-next";
+import ToolsBar from "@/components/ToolsBar";
+import ComponentsClassRadio from "@/components/ComponentClassRadio";
+import ComponentSetting from "@/components/Setting";
+import componentsConfig from "@/configs/components";
 
 export default defineComponent({
-  components: {
-    AllApplication,
-  },
   setup() {
     //组件数据
-    const { componentsConfig } = useComponentsConfigStore();
-
+    const componentClass = ref("basic") as Ref<"basic" | "form" | "container">;
     return () => (
       <div class="editor">
         <div class="editor-components">
-          <div class="editor-components-class">
-            <div class="editor-components-class-item">
-              <span>
-                <all-application theme="outline" size="16" fill="#1890ff" />
-              </span>
-              <span>基础组件</span>
-            </div>
-            <div class="editor-components-class-item">表单组件</div>
-            <div class="editor-components-class-item">媒体组件</div>
-          </div>
+          <ComponentsClassRadio v-model={componentClass.value}></ComponentsClassRadio>
           <div class="editor-components-list">
-            {componentsConfig.componentList.map(component => (
-              <PreviewBlock component={component}></PreviewBlock>
+            {componentsConfig.componentsList[componentClass.value].map(component => (
+              <PreviewBlock key={component.type} component={component}></PreviewBlock>
             ))}
           </div>
         </div>
@@ -38,7 +25,7 @@ export default defineComponent({
           <Container></Container>
           <ToolsBar></ToolsBar>
         </div>
-        <aside>
+        <aside style={{ boxShadow: "-2px 0 4px 0 rgb(0 0 0 / 10%)" }}>
           <ComponentSetting></ComponentSetting>
         </aside>
       </div>

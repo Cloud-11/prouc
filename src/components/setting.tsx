@@ -1,7 +1,7 @@
-import { defineComponent, effect, Ref, ref, watch, watchEffect } from "vue";
-import { useJsonDataStore, useComponentsConfigStore } from "@/stores";
+import { defineComponent, ref, watch, watchEffect } from "vue";
+import { useJsonDataStore } from "@/stores";
 import { storeToRefs } from "pinia";
-import { JsonSchema } from "@/configs/editorComponentsConfig";
+import componentsConfig from "@/configs/components";
 import _ from "lodash";
 import { Block } from "..";
 
@@ -10,8 +10,8 @@ export default defineComponent({
     const jsonDataStore = useJsonDataStore();
     const { modifyBlock } = jsonDataStore;
     const { focusAndBlocks, container } = storeToRefs(jsonDataStore);
-    const { componentsConfig } = useComponentsConfigStore();
-    //labelWidth: "100px",
+    const tabActive = ref("attr");
+
     let schema = ref(),
       formProps = ref({ labelPosition: "left", labelSuffix: "：" }),
       formFooter = ref({
@@ -41,7 +41,6 @@ export default defineComponent({
       };
       uiSchema.value = {};
       formFooter.value = { show: false };
-      // formProps.value = { labelPosition: "left", labelWidth: "300px", labelSuffix: "：" };
       formData.value = {
         height: container.value.height,
         width: container.value.width,
@@ -53,8 +52,8 @@ export default defineComponent({
       if (_.isEmpty(formData.value)) return;
       if (block !== null) {
         const b = _.cloneDeep(block);
-        b.formData = formData.value;
-        modifyBlock(b.id, "formData", b);
+        b.propsData = formData.value;
+        modifyBlock(b.id, "propsData", b);
       } else {
         container.value.height = formData.value.height;
         container.value.width = formData.value.width;
@@ -66,25 +65,7 @@ export default defineComponent({
       () => {
         if (focusAndBlocks.value.focusBlocks.length == 1) {
           block = focusAndBlocks.value.lastFocusBlock;
-          formData.value = {};
-          if (Object.keys(block.formData).length == 0) {
-            (schema.value as JsonSchema)["ui:order"].forEach(key => {
-              const attr = (schema.value as JsonSchema).properties[key];
-              if (!attr.default) return;
-              let value = attr.value;
-              switch (attr.type) {
-                case "number":
-                  value = parseFloat(value);
-                  break;
-                case "boolean":
-                  value = value === "false" ? false : true;
-                  break;
-              }
-              formData.value[key] = value;
-            });
-          } else {
-            formData.value = block.formData;
-          }
+          formData.value = block.propsData;
           const { schema: fschema, uiSchema } =
             componentsConfig.componentMap[block.type].setting.form;
           schema.value = fschema;
@@ -97,13 +78,22 @@ export default defineComponent({
 
     return () => (
       <div class="editor-component-setting">
-        <vue-form
-          // key={formkey}
-          v-model={formData.value}
-          form-props={formProps.value}
-          form-footer={formFooter.value}
-          ui-schema={uiSchema.value}
-          schema={schema.value}></vue-form>
+        <el-tabs v-model={tabActive.value}>
+          <el-tab-pane label="属性" name="attr">
+            <vue-form
+              v-model={formData.value}
+              form-props={formProps.value}
+              form-footer={formFooter.value}
+              ui-schema={uiSchema.value}
+              schema={schema.value}></vue-form>
+          </el-tab-pane>
+          <el-tab-pane label="动作" name="active">
+            动作
+          </el-tab-pane>
+          <el-tab-pane label="事件" name="event">
+            事件
+          </el-tab-pane>
+        </el-tabs>
       </div>
     );
   },

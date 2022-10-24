@@ -1,5 +1,5 @@
 import { Ref } from "vue";
-import { Component } from "@/configs/editorComponentsConfig";
+import { Component } from "@/configs/components";
 import { Block } from "..";
 
 export const useDraggerHandle = (
@@ -37,7 +37,7 @@ export const useDraggerHandle = (
         width: 0,
         height: 0,
       },
-      formData: {},
+      propsData: {},
     };
     addBlock(block);
     currentComponent = null;

@@ -9,8 +9,8 @@ import {
   useRightMenuOptsStore,
 } from "@/stores";
 import { useRightMenu } from "@/hooks/useRightMenu";
-import { Group } from "./../index.d";
-import MarkLine from "@/components/markLine";
+import { Group } from "..";
+import MarkLine from "@/components/MarkLine";
 
 export default defineComponent({
   setup() {

@@ -1,6 +1,6 @@
 import { useDraggerHandle } from "@/hooks/useDragEvent";
 import { defineComponent, Ref } from "vue";
-import { Component } from "../configs/editorComponentsConfig";
+import { Component } from "../configs/components";
 import { storeToRefs } from "pinia";
 import { useJsonDataStore, useDomRefStore } from "@/stores/";
 export default defineComponent({

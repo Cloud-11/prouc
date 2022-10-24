@@ -1,12 +1,13 @@
-import { VNode } from "vue";
-import { AnyObject } from "..";
-import editorComponentsList from "./editorComponents";
+import basic from "./basic";
+import form from "./form";
+import container from "./container";
+import { AnyObject } from "@/index.d";
 
 export interface Component {
   label: string;
   type: string;
   preview: () => JSX.Element;
-  render: (data: any) => () => VNode;
+  render: (data: any) => () => JSX.Element;
   setting: {
     form: JsonSchemaForm;
   };
@@ -37,29 +38,31 @@ interface Properties {
   "ui:options"?: AnyObject;
   multipleOf?: number;
 }
-export interface ComponentsConfig {
-  componentList: Component[];
-  componentMap: { [key: string]: Component };
-  register: (component: Component) => void;
-}
+// export interface ComponentsConfig {
+//   componentList: { basic: Component[]; form: Component[]; container: Component[] };
+//   componentMap: { [key: string]: Component };
+// }
 
-function createEditorConfig(): ComponentsConfig {
-  const componentList: Component[] = [];
-  const componentMap: ComponentsConfig["componentMap"] = {};
-  return {
-    componentList,
-    componentMap,
-    register: (component: Component) => {
-      componentList.push(component);
+function createEditorConfig() {
+  const componentsList = {
+    basic,
+    form,
+    container,
+  };
+  const componentMap: { [key: string]: Component } = {};
+  for (const key in componentsList) {
+    componentsList[key as "basic" | "form" | "container"].forEach(component => {
       componentMap[component.type] = component;
-    },
+    });
+  }
+
+  return {
+    componentsList,
+    componentMap,
   };
 }
 const componentsConfig = createEditorConfig();
 
 //注册组件
-editorComponentsList.forEach(component => {
-  componentsConfig.register(component);
-});
 
 export default componentsConfig;

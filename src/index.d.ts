@@ -41,9 +41,12 @@ export interface Block {
   group: boolean;
   attr: BlockAttr;
   status: BlockStatus;
-  formData: BlockFormData;
+  propsData: BlockPropsData; //组件需要传递的props 组件配置选项
+  state?: any; //组件内部数据
+  events?: any; //组件事件 组件触发==>动作(方法[参数=>数据源])
+  funcs?: any; //组件对外暴露的方法
 }
-export interface BlockFormData {
+export interface BlockPropsData {
   [key: string]: any;
 }
 export interface MaskArea {

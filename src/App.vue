@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Editor from "@/packages/editor";
-import RightMenu from "@/components/rightMenu";
+import RightMenu from "@/components/RightMenu";
+import ControlMenu from "@/components/ControlMenu"
 import { useRightMenuHandler } from "./configs/menusConfig";
 import { storeToRefs } from "pinia";
 import { useDomRefStore, useGlobalDataStore, useJsonDataStore } from "./stores";
@@ -9,7 +10,7 @@ import { useKeyDownEvent } from "@/hooks/useKeyDownEvent";
 import rightMenuOpts from "@/configs/menusConfig";
 import { useRegisterRightMenu } from "./hooks/useRightMenu";
 import { useContainerFuncKey } from "./hooks/useContainerEvent";
-import { Undo, Upload, Download } from "@icon-park/vue-next"
+
 
 const { focusAndBlocks, container } = storeToRefs(useJsonDataStore());
 const { addBlock, modifyBlock, removeBlock, clearFocusBlock, undoRecordOpts } = useJsonDataStore();
@@ -47,24 +48,11 @@ provide("commands", commands)
 
 <template>
     <header class="header">
-        <div class="header-item left"></div>
+        <div class="header-item left">
+            <img width="160" height="50" src="../public/icon.png" alt="">
+        </div>
         <div class="header-item center">
-            <el-button>撤销
-                <template v-slot:icon>
-                    <Undo theme="outline" size="24" fill="#1890ff" />
-                </template>
-            </el-button>
-            <el-button> 导入
-                <template v-slot:icon>
-                    <upload theme="outline" size="24" fill="#1890ff" />
-                </template>
-
-            </el-button>
-            <el-button>导出
-                <template v-slot:icon>
-                    <download theme="outline" size="24" fill="#1890ff" />
-                </template>
-            </el-button>
+            <ControlMenu></ControlMenu>
         </div>
         <div class="header-item right"></div>
     </header>
@@ -81,21 +69,22 @@ provide("commands", commands)
     &-item {
         width: 100px;
         line-height: 50px;
-        text-align: center;
+
     }
 
     .left {
-        background-color: aqua;
+        width: 370px;
     }
 
     .center {
         display: flex;
         align-items: center;
         margin-top: 20px;
+        justify-content: space-around;
     }
 
     .right {
-        background-color: aquamarine;
+        width: 440px;
     }
 }
 </style>
