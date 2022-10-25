@@ -1,4 +1,3 @@
-import { valueEquals } from "element-plus";
 import { Ref } from "vue";
 
 export default [
@@ -11,6 +10,7 @@ export default [
     setting: {
       form: {
         schema: {
+          title: "输入框属性配置",
           type: "object",
           required: [],
           properties: {
@@ -31,37 +31,37 @@ export default [
         },
         formProps: { labelPosition: "right", labelWidth: "300px", labelSuffix: "：" },
       },
-      methods: [
-        {
+      methods: {
+        focus: {
           label: "获得焦点",
           desc: "	使 input 获取焦点",
           action: "focus",
         },
-        {
+        blur: {
           label: "失去焦点",
           desc: "	使 input 失去焦点",
           action: "blur",
         },
-        {
+        select: {
           label: "选中内容",
           desc: "选中 input 中的文字",
           action: "select",
         },
-      ],
-      events: [
-        {
-          label: "失焦事件",
+      },
+      events: {
+        blur: {
+          label: "输入框失焦时",
           desc: "在 Input 失去焦点时触发",
           event: "blur",
           args: [{ name: "value", type: "string|number" }],
         },
-        {
-          label: "失焦事件",
+        change: {
+          label: "输入框内容改变时",
           desc: "仅当 modelValue 改变时，当输入框失去焦点或用户按Enter时触发",
           event: "change",
           args: [{ name: "value", type: "string|number" }],
         },
-      ],
+      },
     },
   },
 ];

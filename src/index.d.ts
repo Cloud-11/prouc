@@ -43,8 +43,19 @@ export interface Block {
   status: BlockStatus;
   propsData: BlockPropsData; //组件需要传递的props 组件配置选项
   state?: any; //组件内部数据
-  events?: any; //组件事件 组件触发==>动作(方法[参数=>数据源])
-  funcs?: any; //组件对外暴露的方法
+  events: BlockEvent[]; //组件事件 组件触发==>动作(方法[参数=>数据源])
+  methods?: any; //组件对外暴露的方法
+}
+export interface BlockEvent {
+  id: string; //事件ID 组件TYPE#组件ID_随机数字
+  name: string; //事件名称
+  trigger: string; //触发方法
+  actions: BlockEventAction[];
+}
+export interface BlockEventAction {
+  blockID: string; //组件id
+  blockName: string; //组件名
+  method: string; //组件方法名
 }
 export interface BlockPropsData {
   [key: string]: any;
@@ -55,6 +66,6 @@ export interface MaskArea {
   top: number;
   left: number;
 }
-export interface AnyObject {
-  [key: string]: any;
+export interface AnyObject<T = any> {
+  [key: string]: T;
 }

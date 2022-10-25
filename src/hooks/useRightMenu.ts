@@ -32,6 +32,9 @@ export const useRegisterRightMenu = (
   rightMenuConfig: RightMenuOpts
 ) => {
   const rightMenuKeyboard = (e: KeyboardEvent) => {
+    //光标键盘事件被覆盖
+    if ((e.target as HTMLElement).nodeName === "INPUT") return;
+
     const { ctrlKey, shiftKey, altKey, key } = e;
     const keyBoardStr = [];
     if (ctrlKey) {

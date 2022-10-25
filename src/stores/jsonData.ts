@@ -134,7 +134,7 @@ export const useJsonDataStore = defineStore("JsonData", () => {
     }
   }
   //block唯一ID
-  let ID_NUM = 0;
+  let ID_NUM = 1000;
   //添加
   function addBlock(block: Block, tag?: string) {
     recordOpts(RecordOpts.ADD, tag);

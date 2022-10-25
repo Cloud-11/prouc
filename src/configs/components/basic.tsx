@@ -9,6 +9,7 @@ export default [
     setting: {
       form: {
         schema: {
+          title: "文本属性配置",
           type: "object",
           required: [],
           properties: {
@@ -28,6 +29,8 @@ export default [
         },
         formProps: { labelPosition: "right", labelWidth: "300px", labelSuffix: "：" },
       },
+      events: {},
+      methods: {},
     },
   },
   {
@@ -86,6 +89,8 @@ export default [
           labelSuffix: "：",
         },
       },
+      events: {},
+      methods: {},
     },
   },
 ];

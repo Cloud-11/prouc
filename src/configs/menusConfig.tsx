@@ -264,7 +264,7 @@ const otherOpts: RightMenu[] = [
   {
     label: "删除",
     name: "delete",
-    keyboard: ["Delete", "Backspace"],
+    keyboard: ["Delete"],
     icon: () => <delete theme="outline" size="24" fill="#333" />,
   },
 ];

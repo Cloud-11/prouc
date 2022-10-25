@@ -41,7 +41,6 @@ const EditorBlock = defineComponent({
           };
     });
 
-    // const { componentsConfig } = useComponentsConfigStore();
     const { render, setting } = componentsConfig.componentMap[block.type];
     let formData: any = {};
     setting.form.schema["ui:order"].forEach(key => {
@@ -60,6 +59,8 @@ const EditorBlock = defineComponent({
     });
 
     block.propsData = formData;
+    block.events = [];
+    block.methods = [];
     const propsData = computed(() => block.propsData);
     let innerRender = () => {};
     if (block.type == "group") {

@@ -49,7 +49,7 @@ provide("commands", commands)
 <template>
     <header class="header">
         <div class="header-item left">
-            <img width="160" height="50" src="../public/icon.png" alt="">
+            <img width="160" height="50" src="/icon.png" alt="">
         </div>
         <div class="header-item center">
             <ControlMenu></ControlMenu>

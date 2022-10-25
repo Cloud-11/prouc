@@ -10,9 +10,21 @@ export interface Component {
   render: (data: any) => () => JSX.Element;
   setting: {
     form: JsonSchemaForm;
+    events: AnyObject<ComponentEvent | any>;
+    methods: AnyObject<ComponentMethod | any>;
   };
 }
-
+export interface ComponentEvent {
+  label: string;
+  desc: string;
+  event: string;
+  args: { name: string; type: string }[] | [];
+}
+export interface ComponentMethod {
+  label: string;
+  desc: string;
+  action: string;
+}
 export interface JsonSchemaForm {
   schema: JsonSchema;
   uiSchema: AnyObject;
@@ -20,6 +32,7 @@ export interface JsonSchemaForm {
   formProps: AnyObject;
 }
 export interface JsonSchema {
+  title: string;
   type: string;
   required: any[];
   properties: propsObj;
