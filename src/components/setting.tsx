@@ -213,18 +213,20 @@ export default defineComponent({
       state.block = null;
     };
     init();
-    watchEffect(() => {
-      if (_.isEmpty(state.formData)) return;
-      if (state.block !== null) {
-        const b = _.cloneDeep(state.block);
-        b.propsData = state.formData;
-        modifyBlock(b.id, "propsData", b);
-        getAllMethod();
-      } else {
-        container.value.height = state.formData.height;
-        container.value.width = state.formData.width;
+    watch(
+      () => state.formData,
+      () => {
+        if (_.isEmpty(state.formData)) return;
+        if (state.block !== null) {
+          const b = _.cloneDeep(state.block);
+          b.propsData = state.formData;
+          modifyBlock(b.id, "propsData", b);
+        } else {
+          container.value.height = state.formData.height;
+          container.value.width = state.formData.width;
+        }
       }
-    });
+    );
 
     watch(
       () => focusAndBlocks.value.focusBlocks,
@@ -271,7 +273,12 @@ export default defineComponent({
             </ol>
           </el-tab-pane>
           <el-tab-pane label="事件" name="event">
-            <el-button type="primary" onClick={() => (state.eventDialog = true)}>
+            <el-button
+              type="primary"
+              onClick={() => {
+                state.eventDialog = true;
+                getAllMethod();
+              }}>
               添加事件
             </el-button>
             <el-table
