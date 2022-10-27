@@ -1,5 +1,5 @@
 import { computed, defineComponent, onMounted, Ref, ref, Slot, watchEffect } from "vue";
-import { Block } from "..";
+import { Block, Group } from "..";
 import { useRightMenu } from "@/hooks/useRightMenu";
 import { useBlocsEvent } from "@/hooks/useBlockEvent";
 import { storeToRefs } from "pinia";
@@ -62,10 +62,22 @@ const EditorBlock = defineComponent({
     block.events = [];
     block.methods = [];
     const propsData = computed(() => block.propsData);
+    const blockSolts: any = (block: Group) =>
+      block.blocks.map((block: Group | Block) => (
+        <EditorBlock
+          key={block.id}
+          block={block}
+          class={block.status.focus ? "editor-block-focus" : ""}></EditorBlock>
+      ));
+
     let innerRender = () => {};
     if (block.type == "group") {
       //组合
-      innerRender = slots.default as Slot;
+      innerRender = render(
+        propsData,
+        block.events,
+        (block as Group).blocks ? blockSolts(block as Group) : null
+      );
     } else {
       innerRender = render(propsData);
     }

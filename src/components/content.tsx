@@ -40,26 +40,12 @@ export default defineComponent({
         ref={contentRef}
         onContextmenu={(e: MouseEvent) => showRightMenu(e, "canvasMenus")}>
         <MarkLine line={markLine}></MarkLine>
-        {Array.from(blocks.value.values()).map(block => {
-          return block.type == "group" ? (
-            <EditorBlock
-              key={block.id}
-              block={block}
-              class={block.status.focus ? "editor-block-focus" : ""}>
-              {(block as Group).blocks.map(block => (
-                <EditorBlock
-                  //TODO v-key={block.id}  不能加id 组合会报错 ?
-                  block={block}
-                  class={block.status.focus ? "editor-block-focus" : ""}></EditorBlock>
-              ))}
-            </EditorBlock>
-          ) : (
-            <EditorBlock
-              key={block.id}
-              block={block}
-              class={block.status.focus ? "editor-block-focus" : ""}></EditorBlock>
-          );
-        })}
+        {Array.from(blocks.value.values()).map(block => (
+          <EditorBlock
+            key={block.id}
+            block={block}
+            class={block.status.focus ? "editor-block-focus" : ""}></EditorBlock>
+        ))}
       </div>
     );
   },

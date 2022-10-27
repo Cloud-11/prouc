@@ -257,20 +257,9 @@ export default defineComponent({
               ui-schema={state.uiSchema}
               schema={state.schema}></vue-form>
           </el-tab-pane>
-          <el-tab-pane label="动作" name="active">
-            <ol>
-              {Object.keys(state.methods).map(key => {
-                const method = state.methods[key];
-                return (
-                  <li style={{ marginBottom: "10px" }}>
-                    <el-card>
-                      {method.action + "：" + method.label}
-                      <p style={{ fontSize: "14px" }}>{method.desc}</p>
-                    </el-card>
-                  </li>
-                );
-              })}
-            </ol>
+          <el-tab-pane label="样式" name="style"></el-tab-pane>
+          <el-tab-pane label="数据源" name="state">
+            组件内部数据源
           </el-tab-pane>
           <el-tab-pane label="事件" name="event">
             <el-button
@@ -296,6 +285,7 @@ export default defineComponent({
             <el-dialog
               v-model={state.eventDialog}
               title="添加事件"
+              width="700px"
               before-close={(done: Function) => {
                 state.addEventForm = { name: "", trigger: "", actions: [] };
                 done();
@@ -307,12 +297,13 @@ export default defineComponent({
                 rules={rules}>
                 <el-form-item label="事件名称" prop="name">
                   <el-input
-                    input-style={{ width: "250px" }}
+                    input-style={{ width: "400px" }}
                     v-model={state.addEventForm.name}
                   />
                 </el-form-item>
                 <el-form-item label="事件触发时机" prop="trigger">
                   <el-select
+                    style={{ width: "422px" }}
                     v-model={state.addEventForm.trigger}
                     placeholder="请选择事件的触发时机">
                     {Object.keys(state.events).map(key => {
@@ -323,16 +314,20 @@ export default defineComponent({
                 </el-form-item>
                 <el-form-item label="执行动作" prop="actions">
                   <el-cascader
+                    style={{ width: "422px" }}
                     v-model={state.addEventForm.actions}
                     options={state.blockMethos}
                     props={{ multiple: true }}
                   />
                 </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" onClick={submitForm}>
+                <el-form-item style={{ margin: "20px 0 18px 106px" }}>
+                  <el-button onClick={resetForm}>取消</el-button>
+                  <el-button
+                    style={{ marginLeft: "20px" }}
+                    type="primary"
+                    onClick={submitForm}>
                     确定
                   </el-button>
-                  <el-button onClick={resetForm}>取消</el-button>
                 </el-form-item>
               </el-form>
             </el-dialog>

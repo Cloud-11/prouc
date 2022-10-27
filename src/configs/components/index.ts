@@ -7,7 +7,7 @@ export interface Component {
   label: string;
   type: string;
   preview: () => JSX.Element;
-  render: (data: any) => () => JSX.Element;
+  render: (props: any, event?: any, solts?: any) => () => JSX.Element;
   setting: {
     form: JsonSchemaForm;
     events: AnyObject<ComponentEvent | any>;

@@ -37,16 +37,12 @@ export default defineComponent({
           lable: "预览",
           icon: () => <send theme="outline" size="24" fill="#1890ff" />,
           handler: () => {
-            console.log(blocks.value);
-
             const saveData = JSON.stringify(blocks.value, replacer);
-            console.log(saveData);
             localStorage.setItem("blocks", saveData);
             const { href } = router.resolve({
               path: "/preview",
             });
             window.open(href, "_blank");
-            // router.push("/preview");
           },
         },
       ],
