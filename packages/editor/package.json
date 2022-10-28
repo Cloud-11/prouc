@@ -1,0 +1,39 @@
+{
+  "name": "@prouc/editor",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/editor.umd.cjs",
+  "module": "./dist/editor.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/editor.js",
+      "require": "./dist/editor.umd.cjs"
+    }
+  },
+  "style": "./dist/index.css",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vue-tsc --noEmit && vite preview"
+  },
+  "dependencies": {
+    "@icon-park/vue-next": "^1.4.2",
+    "@prouc/components": "workspace:*",
+    "@prouc/runtime-render": "workspace:*",
+    "@prouc/shared": "workspace:*",
+    "@lljj/vue3-form-element": "^1.14.0",
+    "element-plus": "^2.2.19",
+    "lodash": "^4.17.21",
+    "pinia": "^2.0.23",
+    "vue": "^3.2.41",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "vite-plugin-dts": "^1.6.6"
+  }
+}

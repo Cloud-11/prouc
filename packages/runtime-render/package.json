@@ -1,0 +1,12 @@
+{
+  "name": "@prouc/runtime-render",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@prouc/components": "workspace:*",
+    "@prouc/shared": "workspace:*",
+    "vue": "^3.2.41"
+  }
+}
