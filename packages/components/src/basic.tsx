@@ -8,26 +8,19 @@ export default [
     render: (data: Ref<any>) => () => <div>{() => data.value.text || "渲染文本"}</div>,
     setting: {
       form: {
-        schema: {
-          title: "文本属性配置",
-          type: "object",
-          required: [],
-          properties: {
-            text: {
-              title: "文本内容",
-              type: "string",
-              "ui:options": {
-                placeholder: "请输入",
-              },
-            },
+        rule: [
+          {
+            type: "input",
+            field: "text",
+            title: "文本内容",
+            info: "",
+            _fc_drag_tag: "input",
+            hidden: false,
+            display: true,
           },
-          "ui:order": ["text"],
-        },
-        uiSchema: {},
-        formFooter: {
-          show: false,
-        },
-        formProps: { labelPosition: "right", labelWidth: "300px", labelSuffix: "：" },
+        ],
+        options: {},
+        initData: { text: "" },
       },
       events: {},
       methods: {},
@@ -40,54 +33,77 @@ export default [
     render: (data: Ref<any>) => () => <el-button {...data.value}>渲染按钮</el-button>,
     setting: {
       form: {
-        schema: {
-          title: "按钮属性配置",
-          type: "object",
-          required: [],
-          properties: {
-            size: {
-              title: "尺寸",
-              type: "string",
-              "ui:widget": "SelectWidget",
-              default: "default",
-              enum: ["large", "default", "small"],
-              enumNames: ["large", "default", "small"],
+        rule: [
+          {
+            type: "select",
+            field: "size",
+            title: "尺寸",
+            info: "",
+            effect: {
+              fetch: "",
             },
-            type: {
-              title: "类型",
-              type: "string",
-              default: "primary",
-              "ui:widget": "SelectWidget",
-              enum: ["primary", "success", "warning"],
-              enumNames: ["primary", "success", "warning"],
-            },
-            plain: {
-              title: "是否为朴素按钮",
-              type: "boolean",
-              default: "false",
-              "ui:options": {
-                activeText: "是",
-                inactiveText: "否",
+            options: [
+              {
+                value: "large",
+                label: "large",
               },
-            },
+              {
+                value: "default",
+                label: "default",
+              },
+              {
+                label: "small",
+                value: "small",
+              },
+            ],
+            _fc_drag_tag: "select",
+            hidden: false,
+            display: true,
           },
-          "ui:order": ["size", "type", "plain"],
-        },
-        uiSchema: {
-          "ui:options": {
-            fieldStyle: {
-              margin: "20px",
+          {
+            type: "select",
+            field: "type",
+            title: "类型",
+            info: "",
+            effect: {
+              fetch: "",
             },
+            options: [
+              {
+                value: "primary",
+                label: "primary",
+              },
+              {
+                value: "success",
+                label: "success",
+              },
+              {
+                label: "warning",
+                value: "warning",
+              },
+            ],
+            _fc_drag_tag: "select",
+            hidden: false,
+            display: true,
           },
-        },
-        formFooter: {
-          show: false,
-        },
-        formProps: {
-          labelPosition: "right",
-          labelWidth: "300px",
-          labelSuffix: "：",
-        },
+          {
+            type: "switch",
+            field: "plain",
+            title: "是否为朴素按钮",
+            info: "",
+            props: {
+              activeText: "是",
+              inactiveText: "否",
+              activeValue: true,
+              inactiveValue: false,
+            },
+            _fc_drag_tag: "switch",
+            hidden: false,
+            display: true,
+          },
+        ],
+        options: {},
+        initData: { size: "default", type: "primary", plain: false, switch: false },
       },
       events: {},
       methods: {},

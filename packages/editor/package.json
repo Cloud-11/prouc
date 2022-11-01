@@ -13,7 +13,8 @@
     ".": {
       "import": "./dist/editor.js",
       "require": "./dist/editor.umd.cjs"
-    }
+    },
+    "./*": "./*"
   },
   "style": "./dist/index.css",
   "scripts": {
@@ -26,14 +27,14 @@
     "@prouc/components": "workspace:*",
     "@prouc/runtime-render": "workspace:*",
     "@prouc/shared": "workspace:*",
-    "@lljj/vue3-form-element": "^1.14.0",
+    "@form-create/element-ui": "^3.1.16",
     "element-plus": "^2.2.19",
     "lodash": "^4.17.21",
     "pinia": "^2.0.23",
-    "vue": "^3.2.41",
-    "vue-router": "^4.1.6"
+    "vue": "^3.2.41"
   },
   "devDependencies": {
-    "vite-plugin-dts": "^1.6.6"
+    "vite-plugin-dts": "^1.6.6",
+    "vue-router": "^4.1.6"
   }
 }

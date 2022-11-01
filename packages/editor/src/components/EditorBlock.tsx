@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, Ref, ref, Slot, watchEffect } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, watchEffect } from "vue";
 import { useRightMenu } from "@/hooks/useRightMenu";
 import { useBlocsEvent } from "@/hooks/useBlockEvent";
 import { storeToRefs } from "pinia";
@@ -11,6 +11,7 @@ import {
 } from "@/stores";
 import componentsConfig from "@prouc/components";
 import { Block, Group } from "@prouc/shared";
+import _ from "lodash";
 
 const EditorBlock = defineComponent({
   props: {
@@ -27,41 +28,27 @@ const EditorBlock = defineComponent({
 
     const blockStyles = computed(() => {
       const { offsetY, offsetX, width, height, zIndex } = block.attr;
-      const blockstyle = {
+      const blockStyle = {
         top: offsetY + "px",
         left: offsetX + "px",
         zIndex: zIndex,
       };
       return width === 0 && height === 0
-        ? blockstyle
+        ? blockStyle
         : {
-            ...blockstyle,
+            ...blockStyle,
             width: width + "px",
             height: height + "px",
           };
     });
 
     const { render, setting } = componentsConfig.componentMap[block.type];
-    let formData: any = {};
-    setting.form.schema["ui:order"].forEach(key => {
-      const attr = setting.form.schema.properties[key];
-      let value = attr.default;
-      if (!value) return;
-      switch (attr.type) {
-        case "number":
-          value = parseFloat(value);
-          break;
-        case "boolean":
-          value = value === "false" ? false : true;
-          break;
-      }
-      formData[key] = value;
-    });
-
-    block.propsData = formData;
+    block.propsData = _.cloneDeep(setting.form.initData);
     block.events = [];
     block.methods = [];
-    const propsData = computed(() => block.propsData);
+    const propsData = computed(() => {
+      return block.propsData;
+    });
     const blockSolts: any = (block: Group) =>
       block.blocks.map((block: Group | Block) => (
         <EditorBlock
@@ -70,7 +57,7 @@ const EditorBlock = defineComponent({
           class={block.status.focus ? "editor-block-focus" : ""}></EditorBlock>
       ));
 
-    let innerRender = () => {};
+    let innerRender = () => <></>;
     if (block.type == "group") {
       //组合
       innerRender = render(

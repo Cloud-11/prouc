@@ -32,6 +32,7 @@ importers:
 
   packages/components:
     specifiers:
+      '@form-create/element-ui': ^3.1.16
       '@prouc/shared': workspace:*
       element-plus: ^2.2.19
       vue: ^3.2.41
@@ -39,11 +40,13 @@ importers:
       '@prouc/shared': link:../shared
       element-plus: 2.2.19_vue@3.2.41
       vue: 3.2.41
+    devDependencies:
+      '@form-create/element-ui': 3.1.16
 
   packages/editor:
     specifiers:
+      '@form-create/element-ui': ^3.1.16
       '@icon-park/vue-next': ^1.4.2
-      '@lljj/vue3-form-element': ^1.14.0
       '@prouc/components': workspace:*
       '@prouc/runtime-render': workspace:*
       '@prouc/shared': workspace:*
@@ -54,8 +57,8 @@ importers:
       vue: ^3.2.41
       vue-router: ^4.1.6
     dependencies:
+      '@form-create/element-ui': 3.1.16
       '@icon-park/vue-next': 1.4.2_vue@3.2.41
-      '@lljj/vue3-form-element': 1.14.0
       '@prouc/components': link:../components
       '@prouc/runtime-render': link:../runtime-render
       '@prouc/shared': link:../shared
@@ -63,14 +66,12 @@ importers:
       lodash: 4.17.21
       pinia: 2.0.23_vue@3.2.41
       vue: 3.2.41
-      vue-router: 4.1.6_vue@3.2.41
     devDependencies:
       vite-plugin-dts: 1.6.6
+      vue-router: 4.1.6_vue@3.2.41
 
   packages/prouc:
     specifiers:
-      '@icon-park/vue-next': ^1.4.2
-      '@lljj/vue3-form-element': ^1.14.0
       '@prouc/editor': workspace:*
       '@prouc/shared': workspace:*
       '@types/lodash': ^4.14.186
@@ -89,8 +90,6 @@ importers:
       vue-router: ^4.1.6
       vue-tsc: ^1.0.9
     dependencies:
-      '@icon-park/vue-next': 1.4.2_vue@3.2.41
-      '@lljj/vue3-form-element': 1.14.0
       '@prouc/editor': link:../editor
       '@prouc/shared': link:../shared
       element-plus: 2.2.19_vue@3.2.41
@@ -458,6 +457,66 @@ packages:
       '@floating-ui/core': 1.0.1
     dev: false
 
+  /@form-create/component-elm-checkbox/3.1.15:
+    resolution: {integrity: sha512-bAl3k0p76wwMX0OxeR8KAEiUl2RP1Jl1kAqbjD762EcSXGgaXgP94v9ag1JhUoiwZkSKWl6IF+e/utjEonRSFw==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/component-elm-frame/3.1.15:
+    resolution: {integrity: sha512-78WbMpMLTYwTo3QP7Fa+N2VF/u1vmRuwDmiobtBtVg9EE7m6//bQV96ibnLNXX27MD41gIg+o1GUJtx/qxZ8Ew==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/component-elm-group/3.1.15:
+    resolution: {integrity: sha512-V/oVxHf9rHqqMHRV0XRVED9EYFCVZ8Tv/EbbIN/4rORruHtzdQOH8I0QHQ9T4vZO9Q4eblApzcJb8Y7bbHX23Q==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/component-elm-radio/3.1.15:
+    resolution: {integrity: sha512-qAf1VlhrUvMlgzkz6BYLRn0UOLahkTI/cbzt8nkp5PL1oGoSXp5xqIOtHMjbnGEkEXW57kjRKI5Q7UjzIhYmvQ==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/component-elm-select/3.1.15:
+    resolution: {integrity: sha512-ZnvPn/TGqgFDed7bKabjRvlwlQ8RYq5WCG9Iy63d2igC8577tv5QTI2rNvfGfxxH/254MPwgNlA94JukxzEOTw==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/component-elm-tree/3.1.15:
+    resolution: {integrity: sha512-4VPN406A8Mvannn8P/2DvStqDYFfDHZ+ILG/0JndOyfe+GdYdSA5SwD3LfC4zD6AhpGrkOJXbd4YYXlBUtzt8g==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/component-elm-upload/3.1.16:
+    resolution: {integrity: sha512-3wpk+Afn59csGfA/vi9X+YVosCojGdp5iKisVVxJ1R+1rRdqVds/t6tZgjcqTjcmWmbs8uOX8W0nDKQKg7v2WQ==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/component-subform/3.1.5:
+    resolution: {integrity: sha512-JHNEFGuwpnjGvCJ0I0GCqPL5al0qXoN4ymnRBpm+oL+6MMo5bz1kUyoqMX1MutuC96gHTqpeqc67hssi8g2mIw==}
+
+  /@form-create/core/3.1.15:
+    resolution: {integrity: sha512-L8WmH9EEAZh0+BigANgWAJEQV1J7EPTRIgx096oJjCHe7ryx9GGaVES78LKGjHieqs2OzIjN2+3LBqJKBaIwqg==}
+    dependencies:
+      '@form-create/utils': 3.1.15
+
+  /@form-create/element-ui/3.1.16:
+    resolution: {integrity: sha512-Mw48uXE+ASZ3+SMWdeWeZ8karT0hNrmWcqKjDW0G50fJ1QCDLn4bF7OfL2F+fMrFlAYaJZKKQxCj4ODhZ+enQQ==}
+    dependencies:
+      '@form-create/component-elm-checkbox': 3.1.15
+      '@form-create/component-elm-frame': 3.1.15
+      '@form-create/component-elm-group': 3.1.15
+      '@form-create/component-elm-radio': 3.1.15
+      '@form-create/component-elm-select': 3.1.15
+      '@form-create/component-elm-tree': 3.1.15
+      '@form-create/component-elm-upload': 3.1.16
+      '@form-create/component-subform': 3.1.5
+      '@form-create/core': 3.1.15
+      '@form-create/utils': 3.1.15
+
+  /@form-create/utils/3.1.15:
+    resolution: {integrity: sha512-tP6Z/c2XC6OYrI8D9/XWvJc2h6apsyMFTy051sY+tCcxppqyR7dBEEXmgfWOrAr980N7k10g27kwJ9TdVn+bfw==}
+
   /@icon-park/vue-next/1.4.2_vue@3.2.41:
     resolution: {integrity: sha512-+QklF255wkfBOabY+xw6FAI0Bwln/RhdwCunNy/9sKdKuChtaU67QZqU67KGAvZUTeeBgsL+yaHHxqfQeGZXEQ==}
     engines: {node: '>= 8.0.0', npm: '>= 5.0.0'}
@@ -504,25 +563,6 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
-
-  /@lljj/vjsf-utils/1.14.0:
-    resolution: {integrity: sha512-dqRn6hSN5sYUvaPrCo6srzGy2Uj17hc95R1WHYhQtLNKVEXuoCrs65y/Ez4amT/sShvvWq6/z9klh1hugqlHSA==}
-    dependencies:
-      ajv: 6.12.6
-    dev: false
-
-  /@lljj/vue3-form-core/1.14.0:
-    resolution: {integrity: sha512-7ZSB66mbQc3iiHa0pRgSYEw+TiC2Et8Z8Zg7IRVjsc5jM/0eQl6Jj9+gecn8Qrb/WWgiQqEMo6ArpgXhdvXxDw==}
-    dependencies:
-      '@lljj/vjsf-utils': 1.14.0
-    dev: false
-
-  /@lljj/vue3-form-element/1.14.0:
-    resolution: {integrity: sha512-EqX0SF7u0LDz5hRjSNArsERBvAKsVZYiGz5Zf19bVxFFNGPCIzmEjwqoUcDusYw4VwOqQLOpQpKt0gXYww4Njg==}
-    dependencies:
-      '@lljj/vjsf-utils': 1.14.0
-      '@lljj/vue3-form-core': 1.14.0
-    dev: false
 
   /@microsoft/api-extractor-model/7.25.2:
     resolution: {integrity: sha512-+h1uCrLQXFAKMUdghhdDcnniDB+6UA/lS9ArlB4QZQ34UbLuXNy2oQ6fafFK8cKXU4mUPTF/yGRjv7JKD5L7eg==}
@@ -818,7 +858,6 @@ packages:
 
   /@vue/devtools-api/6.4.5:
     resolution: {integrity: sha512-JD5fcdIuFxU4fQyXUu3w2KpAJHzTVdN+p4iOX2lMWSHMOoQdMAcpFLZzm9Z/2nmsoZ1a96QEhZ26e50xLBsgOQ==}
-    dev: false
 
   /@vue/reactivity-transform/3.2.41:
     resolution: {integrity: sha512-mK5+BNMsL4hHi+IR3Ft/ho6Za+L3FA5j8WvreJ7XzHrqkPq8jtF/SMo7tuc9gHjLDwKZX1nP1JQOKo9IEAn54A==}
@@ -897,6 +936,7 @@ packages:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
+    dev: true
 
   /ansi-styles/3.2.1:
     resolution: {integrity: sha512-VT0ZI6kZRdTh8YyJw3SMbYm/u+NqfsAxEpWO0Pf9sq8/e94WxxOpPKx9FR1FlyCtOVDNOQ+8ntlqFxiRc+r5qA==}
@@ -1304,6 +1344,7 @@ packages:
 
   /fast-deep-equal/3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
+    dev: true
 
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
@@ -1318,6 +1359,7 @@ packages:
 
   /fast-json-stable-stringify/2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
+    dev: true
 
   /fastq/1.13.0:
     resolution: {integrity: sha512-YpkpUnK8od0o1hmeSc7UUs/eB/vIPWJYjKck2QKIzAf71Vm1AAQ3EbuZB3g2JIy+pg+ERD0vqI79KyZiB2e2Nw==}
@@ -1460,6 +1502,7 @@ packages:
 
   /json-schema-traverse/0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
+    dev: true
 
   /json5/2.2.1:
     resolution: {integrity: sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==}
@@ -1683,6 +1726,7 @@ packages:
   /punycode/2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
     engines: {node: '>=6'}
+    dev: true
 
   /queue-microtask/1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -1959,6 +2003,7 @@ packages:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
       punycode: 2.1.1
+    dev: true
 
   /validator/13.7.0:
     resolution: {integrity: sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==}
@@ -2035,7 +2080,6 @@ packages:
     dependencies:
       '@vue/devtools-api': 6.4.5
       vue: 3.2.41
-    dev: false
 
   /vue-template-compiler/2.7.13:
     resolution: {integrity: sha512-jYM6TClwDS9YqP48gYrtAtaOhRKkbYmbzE+Q51gX5YDr777n7tNI/IZk4QV4l/PjQPNh/FVa/E92sh/RqKMrog==}

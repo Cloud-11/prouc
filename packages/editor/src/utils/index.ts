@@ -1,5 +1,6 @@
 import { Block, Container, MaskArea } from "@prouc/shared";
 import { Ref } from "vue";
+import {Router} from "vue-router";
 
 const collide = (
   rect1: Block,
@@ -26,11 +27,42 @@ const collide = (
   const minX = Math.min(x, cl + left);
   const minY = Math.min(y, ct + top);
 
-  if (maxX - minX <= w * scale + width && maxY - minY <= h * scale + height) {
-    return true;
-  } else {
-    return false;
-  }
+  return maxX - minX <= w * scale + width && maxY - minY <= h * scale + height;
 };
+export interface PreviewModeOption {
+  mode: "none" | "newWindow" | "currentWindow";
+  router?: Router;
+  path?: string;
+}
+//全局初始化配置 无法使用pinia
+let  previewMode:PreviewModeOption  = reactive({mode:"none"})
+const setPreviewMode=(option:PreviewModeOption)=>{
+  previewMode=option
+}
+const getPreviewMode=()=>{
+  return previewMode
+}
 
-export { collide };
+/**
+ * 判断是否是大写
+ * @param s
+ */
+const isUpperCase=(s:string) =>{
+  return s === s.toLocaleUpperCase();
+}
+
+/**
+ * 驼峰转中线
+ * @param str
+ */
+const translateCamelCase=(str:string)=> {
+  let str_arr = str.split('');
+  str_arr.forEach((value,index) => {
+    if(isUpperCase(value)) {
+      str_arr[index] = `${index==0?"":"-"}${value.toLocaleLowerCase()}` ;
+    }
+  })
+  return str_arr.join('').slice(1);
+}
+
+export { collide,setPreviewMode,getPreviewMode,translateCamelCase };

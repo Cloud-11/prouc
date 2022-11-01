@@ -13,5 +13,8 @@
     "@prouc/shared": "workspace:*",
     "element-plus": "^2.2.19",
     "vue": "^3.2.41"
+  },
+  "devDependencies": {
+    "@form-create/element-ui": "^3.1.16"
   }
 }

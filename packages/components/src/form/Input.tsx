@@ -1,63 +1,77 @@
-import { h, markRaw, Ref, resolveComponent } from "vue";
-import { ElCascader } from "element-plus";
+import { Ref } from "vue";
 
 export default {
   label: "输入框",
   type: "input",
   preview: () => <el-input placeholder="预览input"></el-input>,
-  render: (data: Ref<any>) => () =>
-    <el-input {...data.value} placeholder="渲染input"></el-input>,
+  render: (props: Ref<any>, state: any) => () => {
+    return (
+      <el-input
+        {...props.value}
+        v-model={state.modelValue}
+        placeholder="渲染input"></el-input>
+    );
+  },
   setting: {
     form: {
-      schema: {
-        title: "输入框属性配置",
-        type: "object",
-        required: [],
-        properties: {
-          value: {
-            title: "组件绑定数据源",
-            type: "array",
-            items: {
-              type: "string",
-            },
-            "ui:options": {
-              options: [
-                {
-                  label: "全局数据",
-                  value: "global",
-                  children: [
-                    { label: "全局数据", value: "global" },
-                    { label: "store", value: "store" },
-                  ],
-                },
-                {
-                  label: "组件数据",
-                  value: "state",
-                  children: [{ label: "文本绑定值", value: "modelValue" }],
-                },
-              ],
-            },
-            "ui:widget": markRaw(ElCascader),
-          },
-          size: {
-            title: "尺寸",
-            type: "string",
-            "ui:widget": "SelectWidget",
-            default: "default",
-            enum: ["large", "default", "small"],
-            enumNames: ["large", "default", "small"],
-          },
+      rule: [
+        {
+          type: "span",
+          title: "输入框属性配置",
+          native: false,
+          children: [""],
+          _fc_drag_tag: "span",
+          hidden: false,
+          display: true,
         },
-        "ui:order": ["size", "value"],
-      },
-      uiSchema: {
-        // value: {
-        // },
-      },
-      formFooter: {
-        show: false,
-      },
-      formProps: { labelPosition: "right", labelWidth: "300px", labelSuffix: "：" },
+        {
+          type: "cascader",
+          field: "modelValue",
+          title: "组件绑定数据源",
+          info: "",
+          effect: {
+            fetch: "",
+          },
+          props: {
+            options: [
+              {
+                label: "全局数据",
+                value: "global",
+                children: [
+                  {
+                    label: "全局数据",
+                    value: "global",
+                  },
+                  {
+                    label: "store",
+                    value: "store",
+                  },
+                ],
+              },
+              {
+                label: "组件数据",
+                value: "state",
+                children: [
+                  {
+                    label: "文本绑定值",
+                    value: "modelValue",
+                  },
+                ],
+              },
+            ],
+            props: {
+              expandTrigger: "click",
+              multiple: true,
+              emitPath: true,
+            },
+          },
+          _fc_drag_tag: "cascader",
+          hidden: false,
+          display: true,
+        },
+      ],
+      options: {},
+      initData: { modelValue: [] },
     },
     methods: {
       focus: {

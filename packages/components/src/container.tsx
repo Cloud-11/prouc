@@ -11,27 +11,19 @@ export default [
       <div {...props?.value}>{solts}</div>,
     setting: {
       form: {
-        schema: {
-          title: "组合容器属性配置",
-          type: "object",
-          required: [],
-          properties: {
-            // size: {
-            //   title: "尺寸",
-            //   type: "string",
-            //   "ui:widget": "SelectWidget",
-            //   default: "default",
-            //   enum: ["large", "default", "small"],
-            //   enumNames: ["large", "default", "small"],
-            // },
+        rule: [
+          {
+            type: "span",
+            title: "组合容器属性配置",
+            native: false,
+            children: [""],
+            _fc_drag_tag: "span",
+            hidden: false,
+            display: true,
           },
-          "ui:order": [],
-        },
-        uiSchema: {},
-        formFooter: {
-          show: false,
-        },
-        formProps: { labelPosition: "right", labelWidth: "300px", labelSuffix: "：" },
+        ],
+        options: {},
+        initData: {},
       },
       events: {},
       methods: {},

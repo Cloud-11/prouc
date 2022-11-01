@@ -18,7 +18,7 @@ export default defineComponent({
     return () => (
       <div
         class="editor-components-list-preview"
-        draggable
+        draggable="true"
         onDragstart={() => dragStart(component)}
         onDragend={dragEnd}>
         <span>{component.label}</span>

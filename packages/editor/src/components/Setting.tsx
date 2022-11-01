@@ -2,30 +2,27 @@ import { Ref } from "vue";
 import { AnyObject, Block, BlockEventAction } from "@prouc/shared";
 import { useJsonDataStore } from "@/stores";
 import { storeToRefs } from "pinia";
-import componentsConfig, {
-  ComponentEvent,
-  ComponentMethod,
-  JsonSchema,
-} from "@prouc/components";
-import VueForm from "@lljj/vue3-form-element";
+import componentsConfig, { ComponentEvent, ComponentMethod } from "@prouc/components";
+import { Rule, Options } from "@form-create/element-ui";
 import _ from "lodash";
 import { FormInstance, FormRules } from "element-plus";
+import { ComponentSize } from "@form-create/element-ui/types/config";
 
 export default defineComponent({
-  components: {
-    VueForm,
-  },
-  setup() {
+  setup: function () {
     const jsonDataStore = useJsonDataStore();
     const { modifyBlock } = jsonDataStore;
     const { focusAndBlocks, container, blocks } = storeToRefs(jsonDataStore);
+
     interface CascaderOption {
       value: string;
       label: string;
     }
+
     interface CascaderOptions extends CascaderOption {
       children: CascaderOption[];
     }
+
     interface State {
       blockMethos: CascaderOptions[];
       addEventForm: {
@@ -35,41 +32,70 @@ export default defineComponent({
       };
       eventDialog: any;
       tabActive: string;
-      schema: JsonSchema;
-      uiSchema: AnyObject;
+      schema: { rule: Rule[]; options: Options };
       formData: AnyObject;
-      formProps: AnyObject;
-      formFooter: AnyObject;
       methods: AnyObject<ComponentMethod | any>;
       events: AnyObject<ComponentEvent | any>;
       block: Block | null;
     }
+
+    const baseOptions = {
+      form: {
+        labelPosition: "left",
+        size: "default" as ComponentSize,
+        labelWidth: "125px",
+        hideRequiredAsterisk: true,
+        showMessage: true,
+        inlineMessage: false,
+      },
+      submitBtn: false,
+      // resetBtn: false,
+    };
+    const canvasForm = {
+      rule: [
+        {
+          type: "inputNumber",
+          field: "width",
+          title: "宽度",
+          info: "",
+          _fc_drag_tag: "inputNumber",
+          hidden: false,
+          display: true,
+          validate: [
+            {
+              trigger: "change",
+              mode: "required",
+              message: "",
+              required: true,
+              type: "number",
+            },
+          ],
+        },
+        {
+          type: "inputNumber",
+          field: "height",
+          title: "高度",
+          info: "",
+          _fc_drag_tag: "inputNumber",
+          hidden: false,
+          display: true,
+          validate: [
+            {
+              trigger: "change",
+              mode: "required",
+              message: "",
+              required: true,
+              type: "number",
+            },
+          ],
+        },
+      ],
+      options: baseOptions,
+    };
     const state: State = reactive({
       tabActive: "attr",
-      schema: {
-        title: "画布配置",
-        type: "object",
-        required: [],
-        properties: {
-          width: {
-            title: "宽度",
-            type: "number",
-            multipleOf: 1,
-          },
-          height: {
-            title: "高度",
-            type: "number",
-            multipleOf: 1,
-          },
-        },
-        "ui:order": ["width", "height"],
-      },
-      formProps: {
-        show: false,
-      },
-      uiSchema: {},
+      schema: canvasForm,
       formData: {},
-      formFooter: { show: false },
       methods: [],
       events: [],
       block: null,
@@ -189,27 +215,10 @@ export default defineComponent({
       eventDialogFormRef.value.resetFields();
       state.eventDialog = false;
     };
+    let listen = true;
     const init = () => {
-      state.schema = {
-        title: "画布配置",
-        type: "object",
-        required: [],
-        properties: {
-          width: {
-            title: "宽度",
-            type: "number",
-            multipleOf: 1,
-          },
-          height: {
-            title: "高度",
-            type: "number",
-            multipleOf: 1,
-          },
-        },
-        "ui:order": ["width", "height"],
-      };
-      state.uiSchema = {};
-      state.formFooter = { show: false };
+      state.schema = canvasForm;
+      listen = false;
       state.formData = {
         height: container.value.height,
         width: container.value.width,
@@ -220,10 +229,13 @@ export default defineComponent({
     watch(
       () => state.formData,
       () => {
+        if (!listen) {
+          listen = true;
+        }
         if (_.isEmpty(state.formData)) return;
         if (state.block !== null) {
           const b = _.cloneDeep(state.block);
-          b.propsData = state.formData;
+          b.propsData = _.cloneDeep(state.formData);
           modifyBlock(b.id, "propsData", b);
         } else {
           container.value.height = state.formData.height;
@@ -236,14 +248,26 @@ export default defineComponent({
       () => focusAndBlocks.value.focusBlocks,
       () => {
         if (focusAndBlocks.value.focusBlocks.length == 1) {
-          state.block = focusAndBlocks.value.lastFocusBlock;
-          state.formData = state.block.propsData;
+          state.block = _.cloneDeep(focusAndBlocks.value.lastFocusBlock);
+          listen = false;
+          state.formData = _.cloneDeep(state.block.propsData);
           const { label, setting } = componentsConfig.componentMap[state.block.type];
-          const { schema: fschema, uiSchema } = setting.form;
+          const { rule, options } = setting.form;
+          const title = {
+            type: "span",
+            title: `${label}#${state.block.id}属性配置`,
+            native: false,
+            children: [""],
+            _fc_drag_tag: "span",
+            hidden: false,
+            display: true,
+          };
           state.methods = setting.methods;
           state.events = setting.events;
-          state.schema = { ...fschema, title: label + "#" + state.block.id };
-          state.uiSchema = uiSchema;
+          state.schema = {
+            rule: [title, ...rule],
+            options: _.merge(baseOptions, options),
+          };
         } else {
           init();
         }
@@ -254,12 +278,10 @@ export default defineComponent({
       <div class="editor-component-setting">
         <el-tabs v-model={state.tabActive}>
           <el-tab-pane label="属性" name="attr">
-            <vue-form
+            <form-create
               v-model={state.formData}
-              form-props={state.formProps}
-              form-footer={state.formFooter}
-              ui-schema={state.uiSchema}
-              schema={state.schema}></vue-form>
+              rule={state.schema.rule}
+              option={state.schema.options}></form-create>
           </el-tab-pane>
           <el-tab-pane label="样式" name="style"></el-tab-pane>
           <el-tab-pane label="数据源" name="state">

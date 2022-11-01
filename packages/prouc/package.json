@@ -9,8 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@icon-park/vue-next": "^1.4.2",
-    "@lljj/vue3-form-element": "^1.14.0",
     "@prouc/editor": "workspace:*",
     "@prouc/shared": "workspace:*",
     "element-plus": "^2.2.19",

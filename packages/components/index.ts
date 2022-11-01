@@ -2,6 +2,7 @@ import basic from "./src/basic";
 import Input from "./src/form/Input";
 import container from "./src/container";
 import { AnyObject } from "@prouc/shared";
+import { Rule, Options } from "@form-create/element-ui";
 
 export interface Component {
   label: string;
@@ -9,7 +10,7 @@ export interface Component {
   preview: () => JSX.Element;
   render: (props: any, event?: any, solts?: any) => () => JSX.Element;
   setting: {
-    form: JsonSchemaForm;
+    form: FormJsonSchema;
     events: AnyObject<ComponentEvent | any>;
     methods: AnyObject<ComponentMethod | any>;
   };
@@ -25,21 +26,10 @@ export interface ComponentMethod {
   desc: string;
   action: string;
 }
-export interface JsonSchemaForm {
-  schema: JsonSchema;
-  uiSchema: AnyObject;
-  formFooter: AnyObject;
-  formProps: AnyObject;
-}
-export interface JsonSchema {
-  title: string;
-  type: string;
-  required: any[];
-  properties: propsObj;
-  "ui:order": string[];
-}
-interface propsObj {
-  [key: string]: Properties | any;
+export interface FormJsonSchema {
+  rule: Rule[];
+  options: Options;
+  initData: AnyObject;
 }
 interface Properties {
   title: string;

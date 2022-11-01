@@ -19,7 +19,6 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "*.d.ts",
     "src/**/*.vue",
     "src/**/*.ext",
     "src/**/*.d.ts",
