@@ -2,7 +2,7 @@ import { Ref } from "vue";
 import { AnyObject, Block, BlockEventAction } from "@prouc/shared";
 import { useJsonDataStore } from "@/stores";
 import { storeToRefs } from "pinia";
-import componentsConfig, { ComponentEvent, ComponentMethod } from "@prouc/components";
+import { Component, ComponentEvent, ComponentMethod, userConfig } from "@prouc/core";
 import { Rule, Options } from "@form-create/element-ui";
 import _ from "lodash";
 import { FormInstance, FormRules } from "element-plus";
@@ -112,17 +112,19 @@ export default defineComponent({
         action: string;
       }[] = [];
       if (state.block) {
-        const { setting } = componentsConfig.componentMap[(state.block as Block).type];
-        state.block.events.map(({ name, trigger, actions }) => {
-          actions.forEach(action => {
-            events.push({
-              name,
-              trigger: setting.events[trigger].label,
-              component: action.blockName + "#" + action.blockID,
-              action: setting.methods[action.method].label,
+        const component = userConfig.componentList.get(state.block.type);
+        if (component) {
+          state.block.events.map(({ name, trigger, actions }) => {
+            actions.forEach(action => {
+              events.push({
+                name,
+                trigger: component.setting.events[trigger].label,
+                component: action.blockName + "#" + action.blockID,
+                action: component.setting.methods[action.method].label,
+              });
             });
           });
-        });
+        }
       }
       return events;
     });
@@ -131,7 +133,9 @@ export default defineComponent({
     const getAllMethod = () => {
       state.blockMethos = [];
       blocks.value.forEach(block => {
-        const { setting, label } = componentsConfig.componentMap[block.type];
+        const component = userConfig.componentList.get((state.block as Block).type);
+        if (!component) return;
+        const { label, setting } = component;
         if (Object.keys(setting.methods).length < 1) return;
         state.blockMethos.push({
           label: `${label}#${block.id}`,
@@ -191,9 +195,10 @@ export default defineComponent({
                 const actions: BlockEventAction[] = state.addEventForm.actions.map(
                   action => {
                     const ids = action[0].split("#");
+                    const component = userConfig.componentList.get(ids[0]) as Component;
                     return {
                       blockID: ids[1],
-                      blockName: componentsConfig.componentMap[ids[0]].label,
+                      blockName: component.label,
                       method: action[1],
                     };
                   }
@@ -236,6 +241,7 @@ export default defineComponent({
         if (state.block !== null) {
           const b = _.cloneDeep(state.block);
           b.propsData = _.cloneDeep(state.formData);
+          console.log(b.propsData);
           modifyBlock(b.id, "propsData", b);
         } else {
           container.value.height = state.formData.height;
@@ -251,7 +257,9 @@ export default defineComponent({
           state.block = _.cloneDeep(focusAndBlocks.value.lastFocusBlock);
           listen = false;
           state.formData = _.cloneDeep(state.block.propsData);
-          const { label, setting } = componentsConfig.componentMap[state.block.type];
+          const { label, setting } = userConfig.componentList.get(
+            state.block.type
+          ) as Component;
           const { rule, options } = setting.form;
           const title = {
             type: "span",

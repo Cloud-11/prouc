@@ -1,24 +1,34 @@
-import { defineComponent, Ref, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import "./editor.scss";
 import PreviewBlock from "@/components/PreviewBlock";
 import Container from "@/components/Container";
 import ToolsBar from "@/components/ToolsBar";
-import ComponentsClassRadio from "@/components/ComponentClassRadio";
+import ComponentsCategory from "@/components/ComponentsCategory";
 import ComponentSetting from "@/components/Setting";
-import componentsConfig from "@prouc/components";
+import { userConfig } from "@prouc/core";
 
 export default defineComponent({
   setup() {
     //组件数据
-    const componentClass = ref("basic") as Ref<"basic" | "form" | "container">;
+    const activeCategory = ref("");
+    userConfig.categoryList.forEach(category => {
+      if (category.active) {
+        activeCategory.value = category.name;
+        return;
+      }
+    });
     return () => (
       <div class="editor">
         <div class="editor-components">
-          <ComponentsClassRadio v-model={componentClass.value}></ComponentsClassRadio>
+          <ComponentsCategory
+            v-model={activeCategory.value}
+            categoryList={userConfig.categoryList}></ComponentsCategory>
           <div class="editor-components-list">
-            {componentsConfig.componentsList[componentClass.value].map(component => (
-              <PreviewBlock key={component.type} component={component}></PreviewBlock>
-            ))}
+            {userConfig.componentCategoryList
+              .get(activeCategory.value)
+              ?.map(component => (
+                <PreviewBlock key={component.name} component={component}></PreviewBlock>
+              ))}
           </div>
         </div>
         <div class="editor-container">

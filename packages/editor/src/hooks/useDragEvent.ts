@@ -1,5 +1,5 @@
 import { Ref } from "vue";
-import { Component } from "@prouc/components";
+import { Component } from "@prouc/core";
 import { Block } from "@prouc/shared";
 
 export const useDraggerHandle = (
@@ -22,10 +22,10 @@ export const useDraggerHandle = (
   const drop = (e: DragEvent) => {
     //松手 进入
     if (!currentComponent) return;
-    const { type } = currentComponent as Component;
+    const { name } = currentComponent as Component;
     const block = {
       id: 0,
-      type,
+      type: name,
       group: false,
       status: { focus: false, lock: false },
       attr: {

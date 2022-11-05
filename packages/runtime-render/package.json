@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@prouc/components": "workspace:*",
+    "@prouc/core": "workspace:*",
     "@prouc/shared": "workspace:*",
     "vue": "^3.2.41"
   }

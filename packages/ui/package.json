@@ -1,0 +1,18 @@
+{
+  "name": "@prouc/ui",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@icon-park/vue-next": "^1.4.2",
+    "@prouc/core": "workspace:^0.0.1",
+    "element-plus": "^2.2.19",
+    "vue": "^3.2.41"
+  }
+}

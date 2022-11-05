@@ -43,11 +43,22 @@ importers:
     devDependencies:
       '@form-create/element-ui': 3.1.16
 
+  packages/core:
+    specifiers:
+      '@form-create/element-ui': ^3.1.16
+      '@prouc/shared': workspace:*
+      vue: ^3.2.41
+    dependencies:
+      '@prouc/shared': link:../shared
+      vue: 3.2.41
+    devDependencies:
+      '@form-create/element-ui': 3.1.16
+
   packages/editor:
     specifiers:
       '@form-create/element-ui': ^3.1.16
       '@icon-park/vue-next': ^1.4.2
-      '@prouc/components': workspace:*
+      '@prouc/core': workspace:^0.0.1
       '@prouc/runtime-render': workspace:*
       '@prouc/shared': workspace:*
       element-plus: ^2.2.19
@@ -59,7 +70,7 @@ importers:
     dependencies:
       '@form-create/element-ui': 3.1.16
       '@icon-park/vue-next': 1.4.2_vue@3.2.41
-      '@prouc/components': link:../components
+      '@prouc/core': link:../core
       '@prouc/runtime-render': link:../runtime-render
       '@prouc/shared': link:../shared
       element-plus: 2.2.19_vue@3.2.41
@@ -72,8 +83,10 @@ importers:
 
   packages/prouc:
     specifiers:
+      '@icon-park/vue-next': ^1.4.2
       '@prouc/editor': workspace:*
       '@prouc/shared': workspace:*
+      '@prouc/ui': workspace:*
       '@types/lodash': ^4.14.186
       '@types/node': ^18.11.7
       '@vitejs/plugin-vue': ^3.2.0
@@ -90,8 +103,10 @@ importers:
       vue-router: ^4.1.6
       vue-tsc: ^1.0.9
     dependencies:
+      '@icon-park/vue-next': 1.4.2_vue@3.2.41
       '@prouc/editor': link:../editor
       '@prouc/shared': link:../shared
+      '@prouc/ui': link:../ui
       element-plus: 2.2.19_vue@3.2.41
       lodash: 4.17.21
       pinia: 2.0.23_l7r24p6nevbtlimqmqcwa3ouhu
@@ -111,16 +126,28 @@ importers:
 
   packages/runtime-render:
     specifiers:
-      '@prouc/components': workspace:*
+      '@prouc/core': workspace:*
       '@prouc/shared': workspace:*
       vue: ^3.2.41
     dependencies:
-      '@prouc/components': link:../components
+      '@prouc/core': link:../core
       '@prouc/shared': link:../shared
       vue: 3.2.41
 
   packages/shared:
     specifiers: {}
+
+  packages/ui:
+    specifiers:
+      '@icon-park/vue-next': ^1.4.2
+      '@prouc/core': workspace:^0.0.1
+      element-plus: ^2.2.19
+      vue: ^3.2.41
+    dependencies:
+      '@icon-park/vue-next': 1.4.2_vue@3.2.41
+      '@prouc/core': link:../core
+      element-plus: 2.2.19_vue@3.2.41
+      vue: 3.2.41
 
 packages:
 

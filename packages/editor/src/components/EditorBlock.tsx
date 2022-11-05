@@ -9,7 +9,7 @@ import {
   useGlobalDataStore,
   useRightMenuOptsStore,
 } from "@/stores";
-import componentsConfig from "@prouc/components";
+import { Component, userConfig } from "@prouc/core";
 import { Block, Group } from "@prouc/shared";
 import _ from "lodash";
 
@@ -42,32 +42,22 @@ const EditorBlock = defineComponent({
           };
     });
 
-    const { render, setting } = componentsConfig.componentMap[block.type];
-    block.propsData = _.cloneDeep(setting.form.initData);
+    const component = userConfig.componentList.get(block.type) as Component;
+    block.propsData = _.cloneDeep(component.setting.form.initData);
     block.events = [];
     block.methods = [];
     const propsData = computed(() => {
+      console.log(block.propsData);
       return block.propsData;
     });
     const blockSolts: any = (block: Group) =>
-      block.blocks.map((block: Group | Block) => (
-        <EditorBlock
-          key={block.id}
-          block={block}
-          class={block.status.focus ? "editor-block-focus" : ""}></EditorBlock>
-      ));
-
-    let innerRender = () => <></>;
-    if (block.type == "group") {
-      //组合
-      innerRender = render(
-        propsData,
-        block.events,
-        (block as Group).blocks ? blockSolts(block as Group) : null
+      block.blocks.map((block: Group | Block) =>
+        h(EditorBlock, {
+          key: block.id,
+          block,
+          class: block.status.focus ? "editor-block-focus" : "",
+        })
       );
-    } else {
-      innerRender = render(propsData);
-    }
 
     //显示右键菜单
     const { showsMenu, setMenuPos, hiddenMenu } = useRightMenuStore();
@@ -134,7 +124,12 @@ const EditorBlock = defineComponent({
         }
         ref={blockRef}
         style={blockStyles.value}>
-        {innerRender()}
+        {component.render(
+          propsData.value,
+          { modelValue: "" },
+          block.events,
+          (block as Group).blocks ? blockSolts(block as Group) : null
+        )}
       </div>
     );
   },

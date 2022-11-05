@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@icon-park/vue-next": "^1.4.2",
     "@prouc/editor": "workspace:*",
+    "@prouc/ui": "workspace:*",
     "@prouc/shared": "workspace:*",
     "element-plus": "^2.2.19",
     "lodash": "^4.17.21",

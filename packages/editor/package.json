@@ -23,11 +23,11 @@
     "preview": "vue-tsc --noEmit && vite preview"
   },
   "dependencies": {
+    "@form-create/element-ui": "^3.1.16",
     "@icon-park/vue-next": "^1.4.2",
-    "@prouc/components": "workspace:*",
+    "@prouc/core": "workspace:^0.0.1",
     "@prouc/runtime-render": "workspace:*",
     "@prouc/shared": "workspace:*",
-    "@form-create/element-ui": "^3.1.16",
     "element-plus": "^2.2.19",
     "lodash": "^4.17.21",
     "pinia": "^2.0.23",

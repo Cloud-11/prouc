@@ -1,6 +1,6 @@
 import { useDraggerHandle } from "@/hooks/useDragEvent";
 import { Ref } from "vue";
-import { Component } from "@prouc/components";
+import { Component } from "@prouc/core";
 import { storeToRefs } from "pinia";
 import { useJsonDataStore, useDomRefStore } from "@/stores/";
 
@@ -22,7 +22,7 @@ export default defineComponent({
         onDragstart={() => dragStart(component)}
         onDragend={dragEnd}>
         <span>{component.label}</span>
-        {component.preview()}
+        {component.showRender()}
       </div>
     );
   },

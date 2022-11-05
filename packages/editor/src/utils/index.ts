@@ -1,6 +1,6 @@
 import { Block, Container, MaskArea } from "@prouc/shared";
 import { Ref } from "vue";
-import {Router} from "vue-router";
+import { Router } from "vue-router";
 
 const collide = (
   rect1: Block,
@@ -35,34 +35,34 @@ export interface PreviewModeOption {
   path?: string;
 }
 //全局初始化配置 无法使用pinia
-let  previewMode:PreviewModeOption  = reactive({mode:"none"})
-const setPreviewMode=(option:PreviewModeOption)=>{
-  previewMode=option
-}
-const getPreviewMode=()=>{
-  return previewMode
-}
+let previewMode: PreviewModeOption = reactive({ mode: "none" });
+const setPreviewMode = (option: PreviewModeOption) => {
+  previewMode = option;
+};
+const getPreviewMode = () => {
+  return previewMode;
+};
 
 /**
  * 判断是否是大写
  * @param s
  */
-const isUpperCase=(s:string) =>{
+const isUpperCase = (s: string) => {
   return s === s.toLocaleUpperCase();
-}
+};
 
 /**
  * 驼峰转中线
  * @param str
  */
-const translateCamelCase=(str:string)=> {
-  let str_arr = str.split('');
-  str_arr.forEach((value,index) => {
-    if(isUpperCase(value)) {
-      str_arr[index] = `${index==0?"":"-"}${value.toLocaleLowerCase()}` ;
+const translateCamelCase = (str: string) => {
+  let str_arr = str.split("");
+  str_arr.forEach((value, index) => {
+    if (isUpperCase(value)) {
+      str_arr[index] = `${index == 0 ? "" : "-"}${value.toLocaleLowerCase()}`;
     }
-  })
-  return str_arr.join('').slice(1);
-}
+  });
+  return str_arr.join("").slice(1);
+};
 
-export { collide,setPreviewMode,getPreviewMode,translateCamelCase };
+export { collide, setPreviewMode, getPreviewMode, translateCamelCase };
