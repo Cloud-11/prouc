@@ -26,7 +26,7 @@
     "@form-create/element-ui": "^3.1.16",
     "@icon-park/vue-next": "^1.4.2",
     "@prouc/core": "workspace:^0.0.1",
-    "@prouc/runtime-render": "workspace:*",
+    "@prouc/runtime": "workspace:^0.0.0",
     "@prouc/shared": "workspace:*",
     "element-plus": "^2.2.19",
     "lodash": "^4.17.21",

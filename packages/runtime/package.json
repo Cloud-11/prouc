@@ -1,5 +1,5 @@
 {
-  "name": "@prouc/runtime-render",
+  "name": "@prouc/runtime",
   "private": true,
   "version": "0.0.0",
   "type": "module",

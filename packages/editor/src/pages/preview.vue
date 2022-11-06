@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Render } from "@prouc/runtime-render";
+import { Render } from "@prouc/runtime";
 import { DATA_JSON, reviver } from "@prouc/shared";
 
 const data: DATA_JSON["blocks"] = JSON.parse(

@@ -1,0 +1,78 @@
+{
+  "dataType": "Map",
+  "value": [
+    [
+      1001,
+      {
+        "id": 1001,
+        "type": "el-button",
+        "group": false,
+        "status": { "focus": false, "lock": false },
+        "attr": {
+          "x": 758,
+          "y": 492,
+          "zIndex": 1,
+          "offsetY": 223,
+          "offsetX": 275,
+          "width": 62,
+          "height": 34
+        },
+        "propsData": {
+          "size": "default",
+          "type": "warning",
+          "plain": false,
+          "switch": false
+        },
+        "events": [],
+        "methods": []
+      }
+    ],
+    [
+      1002,
+      {
+        "id": 1002,
+        "type": "el-input",
+        "group": false,
+        "status": { "focus": false, "lock": false },
+        "attr": {
+          "x": 626,
+          "y": 387,
+          "zIndex": 1,
+          "offsetY": 118,
+          "offsetX": 143,
+          "width": 194,
+          "height": 34
+        },
+        "propsData": { "modelValue": [] },
+        "events": [],
+        "methods": []
+      }
+    ],
+    [
+      1003,
+      {
+        "id": 1003,
+        "type": "el-button",
+        "group": false,
+        "status": { "focus": false, "lock": false },
+        "attr": {
+          "x": 650,
+          "y": 492,
+          "zIndex": 1,
+          "offsetY": 223,
+          "offsetX": 167,
+          "width": 62,
+          "height": 34
+        },
+        "propsData": {
+          "size": "default",
+          "type": "success",
+          "plain": false,
+          "switch": false
+        },
+        "events": [],
+        "methods": []
+      }
+    ]
+  ]
+}

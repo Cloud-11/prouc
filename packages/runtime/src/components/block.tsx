@@ -1,7 +1,6 @@
 import { Component, userConfig } from "@prouc/core";
 import { Block } from "@prouc/shared";
 import { computed, defineComponent, reactive } from "vue";
-import _ from "lodash";
 
 export default defineComponent({
   props: {
@@ -22,7 +21,7 @@ export default defineComponent({
     });
     const state: any = reactive({});
     if (
-      !_.isEmpty(block.propsData.modelValue) &&
+      !isEmpty(block.propsData.modelValue) &&
       block.propsData.modelValue?.[0][0] == "state"
     ) {
       console.log(block.propsData.modelValue[0][1]);
@@ -38,3 +37,19 @@ export default defineComponent({
       );
   },
 });
+function isEmpty(data: any) {
+  if (data === null || data === undefined) {
+    return true;
+  }
+  if (Array.isArray(data) && data.length === 0) {
+    return true;
+  }
+  if (
+    Object.prototype.toString.call(data) === "[Object Object]" &&
+    Object.keys(data).length === 0
+  ) {
+    return true;
+  }
+
+  return false;
+}
