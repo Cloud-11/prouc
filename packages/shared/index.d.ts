@@ -1,4 +1,17 @@
 declare module "@prouc/shared" {
+  /**
+   * JSON.stringfy 自定义Map处理函数
+   * @param key
+   * @param value
+   */
+  export function replacer(key: string, value: any): any;
+
+  /**
+   * JSON.parse 自定义Map处理函数
+   * @param key
+   * @param value
+   */
+  export function reviver(key: string, value: any): any;
   export interface DATA_JSON {
     container: Container;
     blocks: Map<number, Block | Group>;

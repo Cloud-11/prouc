@@ -2,7 +2,13 @@ import { Ref } from "vue";
 import { AnyObject, Block, BlockEventAction } from "@prouc/shared";
 import { useJsonDataStore } from "@/stores";
 import { storeToRefs } from "pinia";
-import { Component, ComponentEvent, ComponentMethod, userConfig } from "@prouc/core";
+import {
+  ProucComponent,
+  ComponentEvent,
+  ComponentMethod,
+  userConfig,
+  AllDataOptions,
+} from "@prouc/core";
 import { Rule, Options } from "@form-create/element-ui";
 import _ from "lodash";
 import { FormInstance, FormRules } from "element-plus";
@@ -32,7 +38,7 @@ export default defineComponent({
       };
       eventDialog: any;
       tabActive: string;
-      schema: { rule: Rule[]; options: Options };
+      schema: { title: string; rule: Rule[]; options: Options };
       formData: AnyObject;
       methods: AnyObject<ComponentMethod | any>;
       events: AnyObject<ComponentEvent | any>;
@@ -52,6 +58,7 @@ export default defineComponent({
       // resetBtn: false,
     };
     const canvasForm = {
+      title: "页面属性",
       rule: [
         {
           type: "inputNumber",
@@ -118,9 +125,9 @@ export default defineComponent({
             actions.forEach(action => {
               events.push({
                 name,
-                trigger: component.setting.events[trigger].label,
+                trigger: component.events[trigger].label,
                 component: action.blockName + "#" + action.blockID,
-                action: component.setting.methods[action.method].label,
+                action: component.methods[action.method].label,
               });
             });
           });
@@ -135,18 +142,18 @@ export default defineComponent({
       blocks.value.forEach(block => {
         const component = userConfig.componentList.get((state.block as Block).type);
         if (!component) return;
-        const { label, setting } = component;
-        if (Object.keys(setting.methods).length < 1) return;
+        const { label, methods } = component;
+        if (Object.keys(methods).length < 1) return;
         state.blockMethos.push({
           label: `${label}#${block.id}`,
           value: `${block.type}#${block.id}`,
           children: (() => {
             const arr: CascaderOption[] = [];
-            Object.keys(setting.methods).forEach(key => {
-              const method = setting.methods[key];
+            Object.keys(methods).forEach(key => {
+              const method = methods[key];
               arr.push({
                 label: method.label,
-                value: method.action,
+                value: method.name,
               });
             });
             return arr;
@@ -195,7 +202,9 @@ export default defineComponent({
                 const actions: BlockEventAction[] = state.addEventForm.actions.map(
                   action => {
                     const ids = action[0].split("#");
-                    const component = userConfig.componentList.get(ids[0]) as Component;
+                    const component = userConfig.componentList.get(
+                      ids[0]
+                    ) as ProucComponent;
                     return {
                       blockID: ids[1],
                       blockName: component.label,
@@ -234,14 +243,15 @@ export default defineComponent({
     watch(
       () => state.formData,
       () => {
+        //限定监听地方
         if (!listen) {
           listen = true;
+          return;
         }
         if (_.isEmpty(state.formData)) return;
         if (state.block !== null) {
           const b = _.cloneDeep(state.block);
           b.propsData = _.cloneDeep(state.formData);
-          console.log(b.propsData);
           modifyBlock(b.id, "propsData", b);
         } else {
           container.value.height = state.formData.height;
@@ -257,25 +267,24 @@ export default defineComponent({
           state.block = _.cloneDeep(focusAndBlocks.value.lastFocusBlock);
           listen = false;
           state.formData = _.cloneDeep(state.block.propsData);
-          const { label, setting } = userConfig.componentList.get(
+          const { label, form, methods, events } = userConfig.componentList.get(
             state.block.type
-          ) as Component;
-          const { rule, options } = setting.form;
-          const title = {
-            type: "span",
-            title: `${label}#${state.block.id}属性配置`,
-            native: false,
-            children: [""],
-            _fc_drag_tag: "span",
-            hidden: false,
-            display: true,
-          };
-          state.methods = setting.methods;
-          state.events = setting.events;
-          state.schema = {
-            rule: [title, ...rule],
-            options: _.merge(baseOptions, options),
-          };
+          ) as ProucComponent;
+          const { rule, options } = form;
+          const title = `${label}#${state.block.id}`;
+          state.methods = methods;
+          state.events = events;
+          rule.forEach(val => {
+            if (
+              val.type === "cascader" &&
+              val.props &&
+              val.props.options === "AllDataOptions"
+            ) {
+              val.props.options = AllDataOptions;
+              return;
+            }
+          });
+          state.schema = { title, rule, options: _.merge(baseOptions, options) };
         } else {
           init();
         }
@@ -286,7 +295,9 @@ export default defineComponent({
       <div class="editor-component-setting">
         <el-tabs v-model={state.tabActive}>
           <el-tab-pane label="属性" name="attr">
+            <div style={{ marginBottom: "20px" }}>{state.schema.title}</div>
             <form-create
+              key={state.block?.id}
               v-model={state.formData}
               rule={state.schema.rule}
               option={state.schema.options}></form-create>

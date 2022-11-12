@@ -1,6 +1,18 @@
-import { Component, userConfig } from "@prouc/core";
+import { ProucComponent, userConfig, globalData, componentsData } from "@prouc/core";
 import { Block } from "@prouc/shared";
-import { computed, defineComponent, reactive } from "vue";
+import _ from "lodash";
+import {
+  computed,
+  defineComponent,
+  h,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  resolveComponent,
+  watch,
+  watchEffect,
+} from "vue";
 
 export default defineComponent({
   props: {
@@ -19,37 +31,71 @@ export default defineComponent({
         position: "absolute",
       };
     });
-    const state: any = reactive({});
-    if (
-      !isEmpty(block.propsData.modelValue) &&
-      block.propsData.modelValue?.[0][0] == "state"
-    ) {
-      console.log(block.propsData.modelValue[0][1]);
-      state[block.propsData.modelValue[0][1]] = "";
+    //获取组件配置
+    const component = userConfig.componentList.get(block.type) as ProucComponent;
+    //初始化组件状态数据
+    const state: any = reactive(_.cloneDeep(component.state));
+    // state.modelValue = null;
+    //将组件数据存储
+    const componentID = `${component.name}#${block.id}`;
+    if (componentsData.has(componentID)) {
+      componentsData.delete(componentID);
     }
-    const component = userConfig.componentList.get(block.type) as Component;
+    componentsData.set(componentID, state);
+    //卸载清除
+    onUnmounted(() => {
+      componentsData.delete(componentID);
+    });
+    //导出组件外部依赖
+    let nolisten = false;
+    //注入组件依赖数据 双向绑定值
+    //组件props
+    const propsData: Record<string, any> = {};
+    let modelValueKey = "";
+    //全局组件数据变化维护到组件
+    watchEffect(() => {
+      console.log(componentID);
+      for (const key in block.propsData) {
+        const attr = block.propsData[key];
+        //动态props 数据源设置为组件数据或全局
+        if (Array.isArray(attr) && attr) {
+          if (attr[0] == "component") {
+            //双向绑定数据指向组件的哪个数据
+            if (key === "modelValue") {
+              modelValueKey = attr[2];
+              state[attr[2]] = componentsData.get(attr[1])[attr[2]];
+            } else {
+              propsData[key] = state[key] = componentsData.get(attr[1])[attr[2]];
+            }
+          } else if (attr[0] == "global") {
+            //全局数据
+            propsData[key] = globalData[attr[1]];
+          }
+        } else {
+          propsData[key] = attr;
+        }
+      }
+    });
+
+    const inst = ref(null);
+    onMounted(() => {
+      // console.log(inst.value.focus);
+      // inst.value.focus();
+    });
+
     return () =>
-      component.render(
-        { ...block.propsData, style: blockStyles.value },
-        state,
-        block.events
-        // (block as Group).blocks ? blockSolts(block as Group) : null
-      );
+      // @ts-ignore
+      h(resolveComponent(component.name), {
+        ...propsData.value,
+        modelValue: modelValueKey ? state[modelValueKey] : null,
+        "onUpdate:modelValue": modelValueKey
+          ? (val: any) => {
+              state[modelValueKey] = val;
+            }
+          : null,
+        style: blockStyles.value,
+        ref: inst,
+        ...block.events,
+      });
   },
 });
-function isEmpty(data: any) {
-  if (data === null || data === undefined) {
-    return true;
-  }
-  if (Array.isArray(data) && data.length === 0) {
-    return true;
-  }
-  if (
-    Object.prototype.toString.call(data) === "[Object Object]" &&
-    Object.keys(data).length === 0
-  ) {
-    return true;
-  }
-
-  return false;
-}

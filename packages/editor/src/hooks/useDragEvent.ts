@@ -1,12 +1,12 @@
 import { Ref } from "vue";
-import { Component } from "@prouc/core";
+import { ProucComponent } from "@prouc/core";
 import { Block } from "@prouc/shared";
 
 export const useDraggerHandle = (
   addBlock: (block: Block, tag?: string) => void,
   contentRef: Ref<HTMLElement>
 ) => {
-  let currentComponent: Component | null;
+  let currentComponent: ProucComponent | null;
   const dragenter = (e: DragEvent) => {
     //元素检测到拖动进入 设置禁用标识
     (e.dataTransfer as DataTransfer).dropEffect = "move";
@@ -22,7 +22,7 @@ export const useDraggerHandle = (
   const drop = (e: DragEvent) => {
     //松手 进入
     if (!currentComponent) return;
-    const { name } = currentComponent as Component;
+    const { name } = currentComponent as ProucComponent;
     const block = {
       id: 0,
       type: name,
@@ -45,7 +45,7 @@ export const useDraggerHandle = (
   };
 
   return {
-    dragStart: (component: Component) => {
+    dragStart: (component: ProucComponent) => {
       currentComponent = component;
       contentRef.value.addEventListener("dragenter", dragenter);
       contentRef.value.addEventListener("dragover", dragover);

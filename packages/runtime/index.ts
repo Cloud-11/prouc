@@ -1,9 +1,9 @@
-import { Component, userConfig } from "@prouc/core";
+import { ProucComponent, userConfig } from "@prouc/core";
 export { default as Block } from "./src/components/block";
 export { default as Render } from "./src/Render";
 
 interface ComponentCategoryList {
-  [key: string]: Component[];
+  [key: string]: ProucComponent[];
 }
 function installComponents(componentCategoryList: ComponentCategoryList) {
   Object.keys(componentCategoryList).forEach(category => {

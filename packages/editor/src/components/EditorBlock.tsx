@@ -9,7 +9,7 @@ import {
   useGlobalDataStore,
   useRightMenuOptsStore,
 } from "@/stores";
-import { Component, userConfig } from "@prouc/core";
+import { ProucComponent, globalData, componentsData, userConfig } from "@prouc/core";
 import { Block, Group } from "@prouc/shared";
 import _ from "lodash";
 
@@ -42,14 +42,39 @@ const EditorBlock = defineComponent({
           };
     });
 
-    const component = userConfig.componentList.get(block.type) as Component;
-    block.propsData = _.cloneDeep(component.setting.form.initData);
+    const component = userConfig.componentList.get(block.type) as ProucComponent;
+    block.propsData = _.cloneDeep(component.initProps);
     block.events = [];
     block.methods = [];
+    const state: any = reactive(_.cloneDeep(component.state));
+    //将组件数据存储
+    const componentID = `${component.name}#${block.id}`;
+    if (componentsData.has(componentID)) {
+      componentsData.delete(componentID);
+    }
+    componentsData.set(componentID, state);
+    //组件props
     const propsData = computed(() => {
-      console.log(block.propsData);
-      return block.propsData;
+      // console.log(block.propsData);
+      const props: Record<string, any> = {};
+      for (const key in block.propsData) {
+        const attr = block.propsData[key];
+        //动态props 数据源设置为组件数据或全局
+        if (Array.isArray(attr) && attr) {
+          if (attr[0][0] == "component") {
+            //组件数据 自己的或其他组件的
+            props[key] = componentsData.get(attr[0][1])[attr[0][2]] || "";
+          } else if (attr[0][0] == "global") {
+            //全局数据
+            props[key] = globalData[attr[0][1]];
+          }
+        } else {
+          props[key] = attr;
+        }
+      }
+      return props;
     });
+
     const blockSolts: any = (block: Group) =>
       block.blocks.map((block: Group | Block) =>
         h(EditorBlock, {
@@ -108,6 +133,12 @@ const EditorBlock = defineComponent({
       block.attr.x = containerX + cwS + block.attr.offsetX * scale + cx;
       block.attr.y = containerY + chS + block.attr.offsetY * scale + cy;
     });
+    const render = () =>
+      h(
+        resolveComponent(component.name),
+        { ...propsData.value, modelValue: state.modelValue, event: block.events },
+        (block as Group).blocks ? blockSolts(block as Group) : component?.slots?.default()
+      );
 
     //右键菜单
     return () => (
@@ -124,12 +155,7 @@ const EditorBlock = defineComponent({
         }
         ref={blockRef}
         style={blockStyles.value}>
-        {component.render(
-          propsData.value,
-          { modelValue: "" },
-          block.events,
-          (block as Group).blocks ? blockSolts(block as Group) : null
-        )}
+        {render()}
       </div>
     );
   },

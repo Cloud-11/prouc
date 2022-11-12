@@ -1,6 +1,6 @@
 import { useDraggerHandle } from "@/hooks/useDragEvent";
 import { Ref } from "vue";
-import { Component } from "@prouc/core";
+import { ProucComponent } from "@prouc/core";
 import { storeToRefs } from "pinia";
 import { useJsonDataStore, useDomRefStore } from "@/stores/";
 
@@ -9,7 +9,7 @@ export default defineComponent({
     component: { type: Object },
   },
   setup(props) {
-    const component = props.component as Component;
+    const component = props.component as ProucComponent;
     //全局data数据
     const { addBlock } = useJsonDataStore();
     const DomRefStore = useDomRefStore();
@@ -22,7 +22,11 @@ export default defineComponent({
         onDragstart={() => dragStart(component)}
         onDragend={dragEnd}>
         <span>{component.label}</span>
-        {component.showRender()}
+        {h(
+          resolveComponent(component.name),
+          component.initProps,
+          component?.slots?.default
+        )}
       </div>
     );
   },

@@ -26,15 +26,15 @@ import {
 } from "element-plus";
 import FormCreate from "@form-create/element-ui";
 import { App } from "vue";
-import { Category, Component, userConfig } from "@prouc/core";
+import { Category, ProucComponent, userConfig } from "@prouc/core";
 
 const PreviewMode = (options: PreviewModeOption) => {
   setPreviewMode(options);
 };
 
 const importComponents = [
-  ElButton,
-  ElInput,
+  // ElButton,
+  // ElInput,
   ElForm,
   ElFormItem,
   ElTabs,
@@ -55,11 +55,11 @@ const importComponents = [
 ];
 
 export interface ComponentCategoryList {
-  [key: string]: Component[];
+  [key: string]: ProucComponent[];
 }
 function installComponents(componentCategoryList: ComponentCategoryList) {
   Object.keys(componentCategoryList).forEach(category => {
-    let categoryComponents: Component[] = [];
+    let categoryComponents: ProucComponent[] = [];
     componentCategoryList[category].forEach(component => {
       categoryComponents.push(component);
       userConfig.componentList.set(component.name, component);
@@ -78,6 +78,7 @@ function createProucEditor(
     install: (app: App): void => {
       for (const comp of importComponents) {
         app.component(comp.name, comp);
+        // comp.
       }
       app.use(FormCreate);
     },
