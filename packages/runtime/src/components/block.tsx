@@ -38,10 +38,12 @@ export default defineComponent({
     // state.modelValue = null;
     //将组件数据存储
     const componentID = `${component.name}#${block.id}`;
+    //组件数据默认有了，更新
     if (componentsData.has(componentID)) {
-      componentsData.delete(componentID);
+      for (const key in state) {
+        componentsData.get(componentID)[key] = state[key];
+      }
     }
-    componentsData.set(componentID, state);
     //卸载清除
     onUnmounted(() => {
       componentsData.delete(componentID);
@@ -61,6 +63,13 @@ export default defineComponent({
         if (Array.isArray(attr) && attr) {
           if (attr[0] == "component") {
             //双向绑定数据指向组件的哪个数据
+            //组件未加载时先设置数据默认null
+            if (!componentsData.get(attr[1])) {
+              componentsData.set(attr[1], { [attr[2]]: null });
+            } else if (!Object.hasOwn(componentsData.get(attr[1]), attr[2])) {
+              componentsData.get(attr[1])[attr[2]] = null;
+            }
+
             if (key === "modelValue") {
               modelValueKey = attr[2];
               state[attr[2]] = componentsData.get(attr[1])[attr[2]];
@@ -76,12 +85,8 @@ export default defineComponent({
         }
       }
     });
-
     const inst = ref(null);
-    onMounted(() => {
-      // console.log(inst.value.focus);
-      // inst.value.focus();
-    });
+    onMounted(() => {});
 
     return () =>
       // @ts-ignore

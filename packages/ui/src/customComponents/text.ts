@@ -2,14 +2,14 @@ import { ProucComponent } from "@prouc/core";
 import { defineComponent, h } from "vue";
 
 export const ProucText = defineComponent({
-  props: ["modelValue"],
+  props: ["text"],
   name: "prouc-text",
   setup(props, { slots, expose }) {
     const aaa = () => {
       console.log(props);
     };
     expose({ aaa });
-    return () => h("div", null, slots);
+    return () => h("div", null, props.text);
   },
 });
 
@@ -17,7 +17,7 @@ export default new ProucComponent({
   name: "prouc-text",
   type: "basic",
   label: "文本",
-  initProps: {},
+  initProps: { text: "默认文本" },
   methods: {},
   events: {},
   state: { text: "默认文本" },
@@ -26,42 +26,16 @@ export default new ProucComponent({
     rule: [
       {
         type: "cascader",
-        field: "modelValue",
-        title: "组件绑定数据源",
+        field: "text",
+        title: "文本数据源",
         info: "",
         effect: {
           fetch: "",
         },
         props: {
-          options: [
-            {
-              label: "全局数据",
-              value: "global",
-              children: [
-                {
-                  label: "全局数据",
-                  value: "global",
-                },
-                {
-                  label: "store",
-                  value: "store",
-                },
-              ],
-            },
-            {
-              label: "组件数据",
-              value: "state",
-              children: [
-                {
-                  label: "文本绑定值",
-                  value: "modelValue",
-                },
-              ],
-            },
-          ],
+          options: "AllDataOptions",
           props: {
             expandTrigger: "click",
-            multiple: true,
             emitPath: true,
           },
         },

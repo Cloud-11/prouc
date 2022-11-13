@@ -137,7 +137,7 @@ const EditorBlock = defineComponent({
       h(
         resolveComponent(component.name),
         { ...propsData.value, modelValue: state.modelValue, event: block.events },
-        (block as Group).blocks ? blockSolts(block as Group) : component?.slots?.default()
+        (block as Group).blocks ? blockSolts(block as Group) : component?.slots?.default
       );
 
     //右键菜单
