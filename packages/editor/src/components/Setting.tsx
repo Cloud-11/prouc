@@ -13,6 +13,15 @@ import { Rule, Options } from "@form-create/element-ui";
 import _ from "lodash";
 import { FormInstance, FormRules } from "element-plus";
 import { ComponentSize } from "@form-create/element-ui/types/config";
+import type Node from "element-plus/es/components/tree/src/model/node";
+import { json } from "stream/consumers";
+
+interface Tree {
+  id?: number;
+  label: string;
+  value?: string;
+  children?: Tree[];
+}
 
 export default defineComponent({
   setup: function () {
@@ -43,6 +52,7 @@ export default defineComponent({
       methods: AnyObject<ComponentMethod | any>;
       events: AnyObject<ComponentEvent | any>;
       block: Block | null;
+      componentStateTree: Tree[];
     }
 
     const baseOptions = {
@@ -109,6 +119,7 @@ export default defineComponent({
       eventDialog: false,
       addEventForm: { name: "", trigger: "", actions: [] },
       blockMethos: [],
+      componentStateTree: [],
     });
 
     const blockEevnts = computed(() => {
@@ -267,9 +278,13 @@ export default defineComponent({
           state.block = _.cloneDeep(focusAndBlocks.value.lastFocusBlock);
           listen = false;
           state.formData = _.cloneDeep(state.block.propsData);
-          const { label, form, methods, events } = userConfig.componentList.get(
-            state.block.type
-          ) as ProucComponent;
+          const {
+            label,
+            state: _state,
+            form,
+            methods,
+            events,
+          } = userConfig.componentList.get(state.block.type) as ProucComponent;
           const { rule, options } = form;
           const title = `${label}#${state.block.id}`;
           state.methods = methods;
@@ -285,6 +300,26 @@ export default defineComponent({
             }
           });
           state.schema = { title, rule, options: _.merge(baseOptions, options) };
+          //组件内部数据
+          function ObjToTree(obj: any): Tree[] {
+            return Object.keys(obj).map(key => {
+              return _.isObject(obj[key])
+                ? {
+                    label: key,
+                    value: Array.isArray(obj[key])
+                      ? `Array(${obj[key].length})`
+                      : JSON.stringify(obj[key]).length <= 7
+                      ? JSON.stringify(obj[key])
+                      : "Object",
+                    children: ObjToTree(obj[key]),
+                  }
+                : {
+                    label: key,
+                    value: obj[key],
+                  };
+            });
+          }
+          state.componentStateTree = ObjToTree(_state);
         } else {
           init();
         }
@@ -305,6 +340,27 @@ export default defineComponent({
           <el-tab-pane label="样式" name="style"></el-tab-pane>
           <el-tab-pane label="数据源" name="state">
             组件内部数据源
+            <el-tree
+              data={state.componentStateTree}
+              onNode-expand={(data: any, node: any) => {
+                if (!data.value?.includes("Array")) {
+                  data._value = data.value;
+                  data.value = "";
+                }
+              }}
+              onNode-collapse={(data: any, node: any) => {
+                if (!data.value?.includes("Array")) {
+                  data.value = data._value;
+                }
+              }}
+              node-key="label"
+              v-slots={{
+                default: ({ node, data }: { node: any; data: Tree }) => (
+                  <span style={{ fontSize: "18px", color: "#d8d8a7" }}>
+                    {node.label} : <span style={{ color: "#9980f1" }}>{data.value}</span>
+                  </span>
+                ),
+              }}></el-tree>
           </el-tab-pane>
           <el-tab-pane label="事件" name="event">
             <el-button

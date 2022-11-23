@@ -4,7 +4,7 @@ export default new ProucComponent({
   type: "form",
   label: "输入框",
   initProps: { placeholder: "默认输入框" },
-  state: { input: "1231" },
+  state: { input: "1231", data: { a: 1, b: [1, 3, { a: 1 }] } },
   methods: {
     focus: {
       label: "获得焦点",

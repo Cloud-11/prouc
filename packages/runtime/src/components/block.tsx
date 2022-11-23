@@ -43,6 +43,8 @@ export default defineComponent({
       for (const key in state) {
         componentsData.get(componentID)[key] = state[key];
       }
+    } else {
+      componentsData.set(componentID, state);
     }
     //卸载清除
     onUnmounted(() => {
@@ -56,11 +58,19 @@ export default defineComponent({
     let modelValueKey = "";
     //全局组件数据变化维护到组件
     watchEffect(() => {
-      console.log(componentID);
+      console.log(1);
+
       for (const key in block.propsData) {
         const attr = block.propsData[key];
         //动态props 数据源设置为组件数据或全局
         if (Array.isArray(attr) && attr) {
+          //依赖自己数据直接返回
+          if (attr[1] == componentID) {
+            if (key === "modelValue") {
+              modelValueKey = attr[2];
+            }
+            continue;
+          }
           if (attr[0] == "component") {
             //双向绑定数据指向组件的哪个数据
             //组件未加载时先设置数据默认null
@@ -69,12 +79,13 @@ export default defineComponent({
             } else if (!Object.hasOwn(componentsData.get(attr[1]), attr[2])) {
               componentsData.get(attr[1])[attr[2]] = null;
             }
-
+            const refData = componentsData.get(attr[1])[attr[2]];
             if (key === "modelValue") {
               modelValueKey = attr[2];
-              state[attr[2]] = componentsData.get(attr[1])[attr[2]];
+              state[attr[2]] = refData;
             } else {
-              propsData[key] = state[key] = componentsData.get(attr[1])[attr[2]];
+              console.log(key, attr[1], attr[2]);
+              state[key] = refData;
             }
           } else if (attr[0] == "global") {
             //全局数据
@@ -85,13 +96,23 @@ export default defineComponent({
         }
       }
     });
+    //state change notfiy
+    watch(state, () => {
+      console.log(2, componentID);
+      Object.keys(componentsData.get(componentID)).forEach(key => {
+        componentsData.get(componentID)[key] = state[key];
+      });
+    });
     const inst = ref(null);
-    onMounted(() => {});
+    onMounted(() => {
+      // console.log(propsData, state);
+    });
 
     return () =>
       // @ts-ignore
       h(resolveComponent(component.name), {
         ...propsData.value,
+        ...state,
         modelValue: modelValueKey ? state[modelValueKey] : null,
         "onUpdate:modelValue": modelValueKey
           ? (val: any) => {

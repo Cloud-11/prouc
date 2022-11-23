@@ -23,6 +23,7 @@ import {
   ElSwitch,
   ElRow,
   ElCol,
+  ElTree,
 } from "element-plus";
 import FormCreate from "@form-create/element-ui";
 import { App } from "vue";
@@ -35,6 +36,7 @@ const PreviewMode = (options: PreviewModeOption) => {
 const importComponents = [
   // ElButton,
   // ElInput,
+  ElTree,
   ElForm,
   ElFormItem,
   ElTabs,
